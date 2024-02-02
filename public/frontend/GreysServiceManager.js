@@ -2,7 +2,7 @@
 * An object through which you can communicate to the server.
 */
 class ServiceConnection {
-    constructor(appID, apiUrl = 'https://greys-service-manager.onrender.com/services') {
+    constructor(appID, apiUrl = 'https://greys-service-manager-oxzs.onrender.com/services') {
         this.appID = appID;
         this.apiUrl = apiUrl;
     }

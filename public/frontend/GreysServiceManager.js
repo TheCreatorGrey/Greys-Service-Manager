@@ -2,8 +2,7 @@
 * An object through which you can communicate to the server.
 */
 class ServiceConnection {
-    constructor(appID, apiUrl = 'https://greys-service-manager-oxzs.onrender.com/services') {
-        this.appID = appID;
+    constructor(apiUrl = 'https://services.thecreatorgrey.site/api') {
         this.apiUrl = apiUrl;
     }
 
@@ -35,7 +34,7 @@ class ServiceConnection {
             'FAILEDPRS':{
                 type:'error',
                 meaning:'The processes you supplied failed. Please make sure you supplied valid process IDs and the value of the item you requested is compatible with your operation.'
-            },
+            }
         }
 
         let EC = errCodes[code];
@@ -119,7 +118,6 @@ class ServiceConnection {
             type: 'get',
             prs:processes,
             path: path,
-            appID: this.appID,
             sessionID: this.sessionID,
             user: this.user,
             valOnly:valOnly
@@ -137,7 +135,6 @@ class ServiceConnection {
             mode: mode,
             path: path,
             value: value,
-            appID: this.appID,
             perms: permissions,
             sessionID: this.sessionID,
             user: this.user
@@ -167,7 +164,6 @@ class ServiceConnection {
             path: path,
             sessionID: this.sessionID,
             user: this.user,
-            appID: this.appID
         });
 
         return res;
@@ -180,25 +176,6 @@ class ServiceConnection {
         let res = await this.request({
             type: 'batchOp',
             ops: ops,
-            sessionID: this.sessionID,
-            user: this.user
-        });
-
-        return res;
-    }
-
-    /**
-    * A restricted function that sends a request to create a new app slot. Only administrators can use this.
-    */
-    async newApp(ID, value, mode='set') {
-        let res = await this.request({
-            type: 'newapp',
-            mode: mode,
-            path: path,
-            value: value,
-            appID: this.appID,
-            pr: publiclyReadable,
-            pw: publiclyWritable,
             sessionID: this.sessionID,
             user: this.user
         });

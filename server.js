@@ -7,6 +7,7 @@ const app = express();
 app.use(express.static('public'));
 
 var database = {
+    apps: {},
     data: {},
     users: {
         guest: { key: sha256('password'), roles: [], joinDate: getMDY(true), lastOnline: getMDY(true) }, // this is temporary lol
@@ -207,8 +208,10 @@ function makeSession(user, pass) {
     return 'BADAUTH'
 }
 
-function processRequest(raw) {
+function processRequest(raw, r_origin) {
     let r = JSON.parse(raw);
+
+    console.info(`Request from origin "${r_origin}": ${raw}`);
 
     //console.log(r, database.data)
 
@@ -233,21 +236,21 @@ function processRequest(raw) {
         database.users[r.user].lastOnline = getMDY(true);
         
         if (['get', 'set'].includes(r.type)) {
-            if (!(r.appID in database.data)) {
-                database.data[r.appID] = { childCategories: {}, items: {} }
+            if (!(r_origin in database.data)) {
+                database.data[r_origin] = { childCategories: {}, items: {} };
             }
         }
 
         if (r.type === 'get') {
-            return getItemFromPath(database.data[r.appID], r.path, r.user, r.prs, r.valOnly)
+            return getItemFromPath(database.data[r_origin], r.path, r.user, r.prs, r.valOnly)
         }
 
         if (r.type === 'set') {
-            return setItemFromPath(database.data[r.appID], r.path, r.mode, r.value, r.user, r.perms)
+            return setItemFromPath(database.data[r_origin], r.path, r.mode, r.value, r.user, r.perms)
         }
 
         if (r.type === 'listCh') {
-            return listChildren(database.data[r.appID], r.path)
+            return listChildren(database.data[r_origin], r.path)
         }
 
         if (r.type === 'batchOp') {
@@ -264,14 +267,14 @@ app.use((req, res, next) => {
     next();
 });
 
-app.post('/services', (req, res) => {
+app.post('/api', (req, res) => {
     let body = '';
     req.on('data', chunk => {
         body += chunk.toString();
     });
 
     req.on('end', () => {
-        res.status(200).send({ res: processRequest(body) });
+        res.status(200).send({ res: processRequest(body, req.get('origin')) });
     });
 });
 

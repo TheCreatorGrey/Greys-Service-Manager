@@ -1,3 +1,24 @@
+document.documentElement.innerHTML = `
+<link rel="stylesheet" href="https://services.thecreatorgrey.site/style.css">
+
+<div id="GSMprompt">
+    <div>
+        <span>
+            This service uses <a href="https://services.thecreatorgrey.site">Grey's Service Manager</a>.
+            Please continue with an account.
+        </span>
+
+        <br><button id="GSMPromptButton">Continue</button>
+    </div>
+</div>
+
+<script>
+    document.getElementById('GSMPromptButton').onclick = function() {
+        window.location.href = 'https://services.thecreatorgrey.site/login/?redir=' + '${window.location.href}';
+    }
+</script>
+`
+
 /**
 * An object through which you can communicate to the server.
 */

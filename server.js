@@ -1,18 +1,17 @@
 const express = require('express');
 var sha256 = require('js-sha256');
 var perms = require('./permissions.js');
-var CryptoJS = require('crypto-js');
+//var CryptoJS = require('crypto-js');
 
 const app = express();
 app.use(express.static('public'));
 
 var database = {
-    apps: {},
     data: {},
     users: {
         guest: { key: sha256('password'), roles: [], joinDate: getMDY(true), lastOnline: getMDY(true) }, // this is temporary lol
     },
-    sessions: {}
+    sessions: {'public':'public'}
 };
 
 function getMDY(includetime = true) {
@@ -274,7 +273,7 @@ app.post('/api', (req, res) => {
     });
 
     req.on('end', () => {
-        res.status(200).send({ res: processRequest(body, req.get('origin')) });
+        res.status(200).send({ res: processRequest(body, req.get('host')) });
     });
 });
 

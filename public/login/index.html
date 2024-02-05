@@ -13,26 +13,29 @@
 </head>
 
 <body style="background-image: url(../greentile.png); background-size: 100px;">
-    <link rel="stylesheet" href="https://services.thecreatorgrey.site/style.css">
+    <textarea placeholder="Username" name="Username Input" id="usernameInput"></textarea>
+    <textarea placeholder="Password" name="Password Input" id="passwordInput"></textarea>
 
-    <div id="GSMprompt">
-        <div>
-            <span>
-                This service uses <a href="https://services.thecreatorgrey.site">Grey's Service Manager</a>.
-                Please continue with an account.
-            </span>
-    
-            <br><button id="GSMPromptButton">Continue</button>
-        </div>
-    </div>
+    <button id="logbtn">Log in</button>
 
     <script>
-        document.getElementById('GSMPromptButton').onclick = function() {
-            window.location.href = `https://services.thecreatorgrey.site/login/?redir=${window.location.href}`;
+        const params = new URLSearchParams(window.location.search);
+        let redir = params.get('redir');
+        
+        document.getElementById('logbtn').onclick = async function() {
+            let service = new ServiceConnection(true);
+            let username = document.getElementById('usernameInput').value;
+
+            let sess = await service.requestSession(
+                username,
+                document.getElementById('passwordInput').value
+            );
+
+            window.location.href = redir + `?sessID=${sess}&user=${username}`;
         }
     </script>
 
-    <script src="https://services.thecreatorgrey.site/frontend/GreysServiceManager.js"></script>
+    <script src="../frontend/GreysServiceManager.js"></script>
 </body>
 
 </html>

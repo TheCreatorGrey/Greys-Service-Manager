@@ -231,32 +231,36 @@ function processRequest(raw, r_origin) {
         return getUserInfo(r.name)
     }
 
-    if (authenticate(r.user, r.sessionID)) {
-        database.users[r.user].lastOnline = getMDY(true);
+    if (r.sessionID) {
+        if (authenticate(r.user, r.sessionID)) {
+            database.users[r.user].lastOnline = getMDY(true);
         
-        if (['get', 'set'].includes(r.type)) {
-            if (!(r_origin in database.data)) {
-                database.data[r_origin] = { childCategories: {}, items: {} };
+            if (['get', 'set'].includes(r.type)) {
+                if (!(r_origin in database.data)) {
+                    database.data[r_origin] = { childCategories: {}, items: {} };
+                }
             }
-        }
-
-        if (r.type === 'get') {
-            return getItemFromPath(database.data[r_origin], r.path, r.user, r.prs, r.valOnly)
-        }
-
-        if (r.type === 'set') {
-            return setItemFromPath(database.data[r_origin], r.path, r.mode, r.value, r.user, r.perms)
-        }
-
-        if (r.type === 'listCh') {
-            return listChildren(database.data[r_origin], r.path)
-        }
-
-        if (r.type === 'batchOp') {
-            return batchOperation(r.ops)
+    
+            if (r.type === 'get') {
+                return getItemFromPath(database.data[r_origin], r.path, r.user, r.prs, r.valOnly)
+            }
+    
+            if (r.type === 'set') {
+                return setItemFromPath(database.data[r_origin], r.path, r.mode, r.value, r.user, r.perms)
+            }
+    
+            if (r.type === 'listCh') {
+                return listChildren(database.data[r_origin], r.path)
+            }
+    
+            if (r.type === 'batchOp') {
+                return batchOperation(r.ops)
+            }
+        } else {
+            return 'BADAUTH'
         }
     } else {
-        return 'BADAUTH'
+        return 'NOSESSION'
     }
 }
 

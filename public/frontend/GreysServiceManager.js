@@ -1,24 +1,33 @@
-document.body.insertAdjacentHTML('beforebegin', `
-<link rel="stylesheet" href="https://services.thecreatorgrey.site/style.css">
-
-<div id="GSMprompt">
-    <div>
-        <span>
-            This service uses <a href="https://services.thecreatorgrey.site">Grey's Service Manager</a>.
-            Please continue with an account.
-        </span>
-
-        <br><button id="GSMPromptButton" onclick="window.location.href = 'https://services.thecreatorgrey.site/login/?redir=${window.location.href}'">Continue</button>
-    </div>
-</div>
-`)
-
 /**
 * An object through which you can communicate to the server.
 */
 class ServiceConnection {
-    constructor(apiUrl = 'https://services.thecreatorgrey.site/api') {
+    constructor(guest=false, apiUrl = 'https://services.thecreatorgrey.site/api') {
+        this.params = new URLSearchParams(window.location.search);
+
         this.apiUrl = apiUrl;
+
+        if (! guest) { // If the connection is initialized in guest mode, do not open a login prompt or check for session ID/user
+            this.sessionID = this.params.get('sess');
+            this.user = this.params.get('user');
+
+            if ((! this.sessionID) || ! this.user) {
+                document.body.insertAdjacentHTML('beforebegin', `
+                <link rel="stylesheet" href="https://services.thecreatorgrey.site/style.css">
+
+                <div id="GSMprompt">
+                    <div>
+                        <span>
+                            This service uses <a href="https://services.thecreatorgrey.site">Grey's Service Manager</a>.
+                            Please continue with an account.
+                        </span>
+
+                        <br><button id="GSMPromptButton" onclick="window.location.href = 'https://services.thecreatorgrey.site/login/?redir=${window.location.href}'">Continue</button>
+                    </div>
+                </div>
+                `)
+            }
+        }
     }
 
     /**
@@ -49,6 +58,11 @@ class ServiceConnection {
             'FAILEDPRS':{
                 type:'error',
                 meaning:'The processes you supplied failed. Please make sure you supplied valid process IDs and the value of the item you requested is compatible with your operation.'
+            },
+
+            'NOSESSION':{
+                type:'error',
+                meaning:'Your session ID is missing.'
             }
         }
 
@@ -60,7 +74,7 @@ class ServiceConnection {
     }
 
     /**
-    * Returns a session ID which can be loaded with loadSession().
+    * Returns a session ID which can be used later.
     */
     async requestSession(username, password) {
         let newSess = await this.request({ type: 'newSession', user: username, pass: password });
@@ -75,20 +89,13 @@ class ServiceConnection {
     }
 
     /**
-    * Loads a pre-existing session with an ID and username.
-    */
-    async loadSession(username, sessID) {
-        this.user = username;
-        this.sessionID = sessID;
-    }
-
-    /**
     * An internal function which is not intended for use by the user.
     */
     async register(newUser, newPass) {
         return await this.request({
             type: 'register',
-            username: newUser, key: newPass
+            username: newUser, 
+            key: newPass
         });
     }
 
@@ -96,12 +103,8 @@ class ServiceConnection {
     * An internal function which is not intended for use by the user.
     */
     async request(data) {
-        if (!this.user) {
-            if (['get', 'set', 'set'].includes(data.type)) {
-                console.error('Operation failed: Modification and retrieval requests are disabled when not logged in.');
-                return
-            }
-        }
+        data.sessionID = this.sessionID;
+        data.user = this.user;
 
         var f = fetch(this.apiUrl, {
             method: 'POST',
@@ -133,8 +136,6 @@ class ServiceConnection {
             type: 'get',
             prs:processes,
             path: path,
-            sessionID: this.sessionID,
-            user: this.user,
             valOnly:valOnly
         });
 
@@ -151,8 +152,6 @@ class ServiceConnection {
             path: path,
             value: value,
             perms: permissions,
-            sessionID: this.sessionID,
-            user: this.user
         });
 
         return res;
@@ -177,8 +176,6 @@ class ServiceConnection {
         let res = await this.request({
             type: 'listCh',
             path: path,
-            sessionID: this.sessionID,
-            user: this.user,
         });
 
         return res;
@@ -191,8 +188,6 @@ class ServiceConnection {
         let res = await this.request({
             type: 'batchOp',
             ops: ops,
-            sessionID: this.sessionID,
-            user: this.user
         });
 
         return res;

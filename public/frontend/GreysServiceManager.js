@@ -7,7 +7,7 @@ class ServiceConnection {
 
         this.apiUrl = apiUrl;
 
-        if (! guest) {
+        if (guest) {
             console.info('You have initialized your ServiceConnection in guest mode. You will only be able to perform operations available to guests.')
         } else { // If the connection is initialized in guest mode, do not open a login prompt or check for session ID/user
             this.sessionID = this.params.get('sess');

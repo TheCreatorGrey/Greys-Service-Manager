@@ -1,4 +1,4 @@
-document.documentElement.innerHTML = `
+document.body.insertAdjacentHTML('beforebegin', `
 <link rel="stylesheet" href="https://services.thecreatorgrey.site/style.css">
 
 <div id="GSMprompt">
@@ -8,16 +8,10 @@ document.documentElement.innerHTML = `
             Please continue with an account.
         </span>
 
-        <br><button id="GSMPromptButton">Continue</button>
+        <br><button id="GSMPromptButton" onclick="window.location.href = 'https://services.thecreatorgrey.site/login/?redir=${window.location.href}'">Continue</button>
     </div>
 </div>
-
-<script>
-    document.getElementById('GSMPromptButton').onclick = function() {
-        window.location.href = 'https://services.thecreatorgrey.site/login/?redir=${window.location.href}';
-    }
-</script>
-`;
+`)
 
 /**
 * An object through which you can communicate to the server.

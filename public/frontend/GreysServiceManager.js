@@ -17,7 +17,7 @@ document.documentElement.innerHTML = `
         window.location.href = 'https://services.thecreatorgrey.site/login/?redir=' + '${window.location.href}';
     }
 </script>
-`
+`;
 
 /**
 * An object through which you can communicate to the server.

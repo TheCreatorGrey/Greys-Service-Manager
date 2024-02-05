@@ -13,25 +13,6 @@
 </head>
 
 <body style="background-image: url(../greentile.png); background-size: 100px;">
-    <link rel="stylesheet" href="https://services.thecreatorgrey.site/style.css">
-
-    <div id="GSMprompt">
-        <div>
-            <span>
-                This service uses <a href="https://services.thecreatorgrey.site">Grey's Service Manager</a>.
-                Please continue with an account.
-            </span>
-    
-            <br><button id="GSMPromptButton">Continue</button>
-        </div>
-    </div>
-
-    <script>
-        document.getElementById('GSMPromptButton').onclick = function() {
-            window.location.href = `https://services.thecreatorgrey.site/login/?redir=${window.location.href}`;
-        }
-    </script>
-
     <script src="https://services.thecreatorgrey.site/frontend/GreysServiceManager.js"></script>
 
     <script>

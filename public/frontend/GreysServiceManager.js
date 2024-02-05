@@ -14,7 +14,7 @@ document.documentElement.innerHTML = `
 
 <script>
     document.getElementById('GSMPromptButton').onclick = function() {
-        window.location.href = 'https://services.thecreatorgrey.site/login/?redir=' + '${window.location.href}';
+        window.location.href = 'https://services.thecreatorgrey.site/login/?redir=${window.location.href}';
     }
 </script>
 `;

@@ -104,7 +104,10 @@ class ServiceConnection {
     */
     async request(data) {
         data.sessionID = this.sessionID;
-        data.user = this.user;
+
+        if (! (data.type === 'newSession')) {
+            data.user = this.user;
+        }
 
         var f = fetch(this.apiUrl, {
             method: 'POST',

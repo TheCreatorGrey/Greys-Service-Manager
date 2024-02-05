@@ -7,11 +7,15 @@ class ServiceConnection {
 
         this.apiUrl = apiUrl;
 
-        if (! guest) { // If the connection is initialized in guest mode, do not open a login prompt or check for session ID/user
+        if (! guest) {
+            console.info('You have initialized your ServiceConnection in guest mode. You will only be able to perform operations available to guests.')
+        } else { // If the connection is initialized in guest mode, do not open a login prompt or check for session ID/user
             this.sessionID = this.params.get('sess');
             this.user = this.params.get('user');
 
-            if ((! this.sessionID) || ! this.user) {
+            if ((! this.sessionID) || (! this.user)) {
+                console.info('Session ID and/or username were not found. Prompting login...');
+
                 document.body.insertAdjacentHTML('beforebegin', `
                 <link rel="stylesheet" href="https://services.thecreatorgrey.site/style.css">
 

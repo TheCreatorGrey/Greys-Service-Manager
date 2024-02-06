@@ -202,6 +202,7 @@ function authenticate(user, sessID, app) { // Also self-explanitory
 }
 
 function makeSession(user, pass, app) { // Takes login information and returns a random 16 char-long session ID.
+    console.log(database.apps);
     if (database.apps[app]) {
         if (user in database.users) {
             if ((database.users[user].key === sha256(pass))) {

@@ -134,7 +134,8 @@ function setItemFromPath(obj, path, mode, value, user, permissions) { // Takes a
                 current.childCategories[catName] = { items: {}, childCategories: {} };
             }
 
-            if ((p > (pathList.length - 2))) {
+            console.log(catName, pathList[pathList.length-1]);
+            if (catName === pathList[pathList.length-1]) {
                 let item = current.childCategories[catName].items[pathList[pathList.length - 1]];
 
                 if (mode === 'set') {

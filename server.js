@@ -6,7 +6,7 @@ var perms = require('./permissions.js');
 const app = express();
 app.use(express.static('public'));
 
-var database = {
+var database = { // I prefer not to use libraries where I can, so the database is basically just stored in this JSON.
     data: {},
     users: {
         guest: { key: sha256('password'), roles: [], joinDate: getMDY(true), lastOnline: getMDY(true) }, // this is temporary lol
@@ -14,7 +14,7 @@ var database = {
     sessions: {'public':'public'}
 };
 
-function getMDY(includetime = true) {
+function getMDY(includetime = true) { // This poorly-named funtion gets the current UTC month, day, year and optionally the time.
     let d = new Date();
     let result = { day: d.getUTCDate(), month: d.getUTCMonth(), year: d.getUTCFullYear() };
 
@@ -26,7 +26,7 @@ function getMDY(includetime = true) {
     return result;
 }
 
-function getUserInfo(user) {
+function getUserInfo(user) { // Self-explanitory.
     let fullInfo = database.users[user];
 
     if (fullInfo) {
@@ -39,7 +39,7 @@ function getUserInfo(user) {
     }
 }
 
-function listChildren(obj, path, user) {
+function listChildren(obj, path, user) { // This takes a database directory and returns a list of it's contents.
     let pathList = path.split("/");
     let userInfo = getUserInfo(user);
     let current = obj;
@@ -120,7 +120,7 @@ function getItemFromPath(obj, path, user, processes = [], intent = 'read', valOn
     }
 }
 
-function setItemFromPath(obj, path, mode, value, user, permissions) {
+function setItemFromPath(obj, path, mode, value, user, permissions) { // Takes a database directory and sets the specified item to the specified value. Also checks user's permission.
     if (getItemFromPath(obj, path, user, [], 'write') === 'NOACCESS') {
         return 'NOACCESS'
     } else {
@@ -152,7 +152,7 @@ function setItemFromPath(obj, path, mode, value, user, permissions) {
     }
 }
 
-function batchOperation(ops, obj, user) {
+function batchOperation(ops, obj, user) { // Performs multiple operations in one go.
     if (ops.length < 21) {
         let responses = [];
 
@@ -170,7 +170,21 @@ function batchOperation(ops, obj, user) {
     }
 }
 
-function authenticate(user, sessID) {
+function checkChars(string) { // Checks if a given string contains anything except for letters and numbers.
+    let allowed = [...'qwertyuiopasdfghjklzxcvbnm1234567890_-'];
+
+    let passes = true;
+
+    for (i of string) {
+      if (!allowed.includes(i.toLowerCase())) {
+        passes = false
+      }
+    }
+
+    return passes;
+  }
+
+function authenticate(user, sessID) { // Do I need to explain what this does?
     if (user in database.users) {
         if ((database.sessions[user] === sessID)) {
             console.log(`Successful authentication attempt to '${user}'`);
@@ -182,7 +196,7 @@ function authenticate(user, sessID) {
     return false;
 }
 
-function makeSession(user, pass) {
+function makeSession(user, pass) { // Takes login information and spits out a random 16 char-long session ID.
     if (user in database.users) {
         if ((database.users[user].key === sha256(pass))) {
             let id = '';
@@ -207,14 +221,15 @@ function makeSession(user, pass) {
     return 'BADAUTH'
 }
 
+
+// This takes a request JSON and processes it. It authenticates the 
+// user then returns or performs the action that was requested.
 function processRequest(raw, r_origin) {
     let r = JSON.parse(raw);
 
     console.info(`Request from origin "${r_origin}": ${raw}`);
 
-    //console.log(r, database.data)
-
-    if (r.type === 'newSession') {
+    if (r.type === 'newSession') { // These individual if statements determine what the request 'wants' based on it's 'type' property.
         return makeSession(r.user, r.pass)
     }
 
@@ -222,8 +237,24 @@ function processRequest(raw, r_origin) {
         if (database.users[r.username]) {
             return 'USERTAKEN'
         } else {
-            database.users[r.username] = { key: sha256(r.key), roles: [], joinDate: getMDY(true), lastOnline: getMDY(true) };
-            return true
+            if (r.username.length < 15) {
+                if (r.username.length > 2) {
+                    if (checkChars(r.username)) {
+                        if (r.password.length > 9) {
+                            database.users[r.username] = { key: sha256(r.key), roles: [], joinDate: getMDY(true), lastOnline: getMDY(true) };
+                            return true
+                        } else {
+                            return 'SHORTKEY'
+                        }
+                    } else {
+                        return 'BADCHARS'
+                    }
+                } else {
+                    return 'TOOFEWCHARS'
+                }
+            } else {
+                return 'TOOMANYCHARS'
+            }
         }
     }
 
@@ -231,7 +262,7 @@ function processRequest(raw, r_origin) {
         return getUserInfo(r.name)
     }
 
-    if (r.sessionID) {
+    if (r.sessionID) { // Everything under this statement cannot be performed by unauthenticated or guest users. Mostly database operations.
         if (authenticate(r.user, r.sessionID)) {
             database.users[r.user].lastOnline = getMDY(true);
         
@@ -270,7 +301,7 @@ app.use((req, res, next) => {
     next();
 });
 
-app.post('/api', (req, res) => {
+app.post('/api', (req, res) => { // This eyesore chunk of code manages the requests.
     let body = '';
     req.on('data', chunk => {
         body += chunk.toString();

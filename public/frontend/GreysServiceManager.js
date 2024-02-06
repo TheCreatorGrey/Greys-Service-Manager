@@ -20,14 +20,12 @@ class ServiceConnection {
                 <link rel="stylesheet" href="https://services.thecreatorgrey.site/style.css">
 
                 <div id="GSMprompt">
-                    <div>
-                        <span>
-                            This service uses <a href="https://services.thecreatorgrey.site">Grey's Service Manager</a>.
-                            Please continue with an account.
-                        </span>
+                    <span>
+                        This service uses <a href="https://services.thecreatorgrey.site">Grey's Service Manager</a>.
+                        Please continue with an account.
+                    </span>
 
-                        <br><button id="GSMPromptButton" onclick="window.location.href = 'https://services.thecreatorgrey.site/login/?redir=${window.location.href}'">Continue</button>
-                    </div>
+                    <br><button id="GSMPromptButton" onclick="window.location.href = 'https://services.thecreatorgrey.site/login/?redir=${window.location.href}'">Continue</button>
                 </div>
                 `)
             }
@@ -36,6 +34,8 @@ class ServiceConnection {
 
     /**
     * An internal function which is not intended for use by the user.
+    * 
+    * Takes an error code from the server and logs it's meaning.
     */
     interperetErrCode(code) {
         let errCodes = {
@@ -78,7 +78,7 @@ class ServiceConnection {
     }
 
     /**
-    * Returns a session ID which can be used later.
+    * Requests and returns a session ID which can be used later.
     */
     async requestSession(username, password) {
         let newSess = await this.request({ type: 'newSession', user: username, pass: password });
@@ -94,6 +94,8 @@ class ServiceConnection {
 
     /**
     * An internal function which is not intended for use by the user.
+    * 
+    * Makes an account creation request.
     */
     async register(newUser, newPass) {
         return await this.request({
@@ -105,6 +107,8 @@ class ServiceConnection {
 
     /**
     * An internal function which is not intended for use by the user.
+    * 
+    * Makes a request to the server.
     */
     async request(data) {
         data.sessionID = this.sessionID;
@@ -150,7 +154,7 @@ class ServiceConnection {
     }
 
     /**
-    * Modifies an item from the database.
+    * Modifies or sets an item from the database.
     */
     async setItem(path, value, mode='set', permissions={}) {
         let res = await this.request({

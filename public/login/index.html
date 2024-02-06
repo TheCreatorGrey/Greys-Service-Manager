@@ -1,6 +1,6 @@
 <!doctype html>
 
-<html lang="en" class="homepage">
+<html lang="en" class="homepage" style="height: 100%;">
 
 <head>
     <meta charset="utf-8">
@@ -12,30 +12,155 @@
     <link rel="stylesheet" href="../style.css">
 </head>
 
-<body style="background-image: url(../greentile.png); background-size: 100px;">
-    <textarea placeholder="Username" name="Username Input" id="usernameInput"></textarea>
-    <textarea placeholder="Password" name="Password Input" id="passwordInput"></textarea>
+<body style="background-image: url(../untitled.png); background-size: cover; background-repeat: no-repeat; background-position: center;">
 
-    <button id="logbtn">Log in</button>
+    <div id="GSMprompt">
+        <span id="spanHeader"></span>
+        <br>
+
+        <textarea placeholder="Username" name="Username Input" id="usernameInput"></textarea><br>
+        <textarea placeholder="Password" name="Password Input" id="passwordInput"></textarea><br>
+    
+        <button id="logbtn" class="largeButton"></button><br>
+        <button id="crbtn"></button><br>
+
+        <small id="errorMsg"></small>
+
+        <span></span>
+    </div>
+
+    <script src="../frontend/GreysServiceManager.js"></script>
 
     <script>
         const params = new URLSearchParams(window.location.search);
         let redir = params.get('redir');
-        
-        document.getElementById('logbtn').onclick = async function() {
-            let service = new ServiceConnection(true);
-            let username = document.getElementById('usernameInput').value;
+        let service = new ServiceConnection(true);
 
-            let sess = await service.requestSession(
-                username,
-                document.getElementById('passwordInput').value
-            );
+        // These prevent newlines in the login menu. I just duplicated them because I'm lazy
+        document.getElementById("usernameInput").addEventListener("keydown", function(e) {
+            if (e.keyCode === 13) {
+                e.preventDefault();
+            }
+        });
 
-            window.location.href = redir + `?sessID=${sess}&user=${username}`;
+        document.getElementById("passwordInput").addEventListener("keydown", function(e) {
+            if (e.keyCode === 13) {
+                e.preventDefault();
+            }
+        });
+
+
+
+        setInterval(() => { // Because I can't use percentage on text, I have to resort to this sh*t
+            let prompt = document.getElementById('GSMprompt');
+
+            let elements = prompt.querySelectorAll('textarea,button,span');
+
+            for (e of elements) {
+                if (e.tagName === 'TEXTAREA') {
+
+                    e.style.lineHeight = `${e.clientHeight}px`;
+                    e.style.fontSize = `${e.clientHeight/2}px`;
+                    e.value.replace(/\n|\r/g, "");
+
+                } else if (e.tagName === 'BUTTON') {
+
+                    e.style.fontSize = `${prompt.clientHeight/20}px`
+
+                } else if (e.tagName === 'SPAN') {
+
+                    e.style.fontSize = `${prompt.clientHeight/10}px`
+
+                }
+            }
+        }, 100)
+
+
+        function switchMenu(mode) { // Switches menu between registration and login.
+            let loginBtn =  document.getElementById('logbtn');
+            let createBtn = document.getElementById('crbtn');
+            let spanHeader = document.getElementById('spanHeader');
+            let errorMsg = document.getElementById('errorMsg');
+
+            let usInput = document.getElementById('usernameInput');
+            let passInput = document.getElementById('passwordInput');
+
+            usInput.value = '';
+            passInput.value = '';
+            
+            if (mode === 'login') {
+                loginBtn.innerText = 'Log in';
+                createBtn.innerText = 'Sign up';
+                spanHeader.innerText = 'Log in';
+
+                createBtn.onclick = function() {switchMenu("signup")};
+
+                loginBtn.onclick = async function() {
+                    let username = usInput.value;
+
+                    errorMsg.innerText = '';
+
+                    let sess = await service.requestSession(
+                        username,
+                        passInput.value
+                    );
+
+                    if (sess) {
+                        if (redir) {
+                            errorMsg.style.color = 'green';
+                            errorMsg.innerText = 'Login successful. You should be redirected shortly...';
+
+                            window.location.href = redir + `?sessID=${sess}&user=${username}`;
+                        } else {
+                            errorMsg.style.color = 'yellow';
+                            errorMsg.innerText = 'Could not redirect because no URL was found.';
+                        }
+                    } else {
+                        errorMsg.style.color = 'red';
+                        errorMsg.innerText = 'Login failed. Please try again.';
+                    }
+                }
+            } else if (mode === 'signup') {
+                loginBtn.innerText = 'Sign up';
+                createBtn.innerText = 'Back';
+                spanHeader.innerText = 'Sign up';
+
+                createBtn.onclick = function() {switchMenu("login")};
+
+                loginBtn.onclick = async function() {
+                    errorMsg.innerText = '';
+                    
+                    let register = await service.register(usInput.value, passInput.value);
+
+                    if (register) {
+                        if (register === true) {
+                            errorMsg.style.color = 'green';
+                            errorMsg.innerText = 'Account registration successful.';
+                        } else {
+                            errorMsg.style.color = 'yellow';
+
+                            if (register === 'USERTAKEN') {
+                                errorMsg.innerText = 'Username is taken.';
+                            } else if (register === 'TOOMANYCHARS') {
+                                errorMsg.innerText = 'Username exceeds the 14 character limit.';
+                            } else if (register === 'TOOFEWCHARS') {
+                                errorMsg.innerText = 'Username is under 3 characters long.';
+                            } else if (register === 'BADCHARS') {
+                                errorMsg.innerText = 'Username must only contain letters, numbers, underscores and dashes.';
+                            } else if (register === 'SHORTKEY') {
+                                errorMsg.innerText = 'Password must be at least 10 characters long.';
+                            }
+                        }
+                    } else {
+                        errorMsg.style.color = 'red';
+                        errorMsg.innerText = 'Account registration failed.';
+                    }
+                }
+            }
         }
-    </script>
 
-    <script src="../frontend/GreysServiceManager.js"></script>
+        switchMenu('login')
+    </script>
 </body>
 
 </html>

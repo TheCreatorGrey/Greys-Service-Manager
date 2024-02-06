@@ -69,7 +69,7 @@ function listChildren(obj, path, user) { // This takes a database directory and 
 function getItemFromPath(obj, path, user, processes = [], intent = 'read', valOnly=true) { // The intent argument tells the function which permission to check for when determining whether the user has access or not. The only case in which write is used instead of read is in the set function.
     let pathList = path.split("/");
     let current = obj;
-    console.log(obj)
+    console.log(JSON.stringify(obj))
 
     for (p in pathList) {
         let catName = pathList[p];
@@ -77,7 +77,7 @@ function getItemFromPath(obj, path, user, processes = [], intent = 'read', valOn
         let newCurr = current.childCategories[catName];
         if (newCurr) {
             current = newCurr;
-            console.log(current + 'amogus')
+            console.log(JSON.stringify('current') + 'amogus')
         } else {
             return 'NOITEM'
         }
@@ -197,7 +197,6 @@ function authenticate(user, sessID, app) { // Also self-explanitory
 }
 
 function makeSession(user, pass, app) { // Takes login information and returns a random 16 char-long session ID.
-    console.log(database.apps);
     if (database.apps[app]) {
         if (user in database.users) {
             if ((database.users[user].key === sha256(pass))) {

@@ -8,10 +8,6 @@ app.use(express.static('public'));
 
 var database = { // I prefer not to use libraries where I can, so the database is basically just stored in this JSON.
     apps:{
-        'https://thecreatorgrey.site':{
-            data:{},
-            sessions:{}
-        },
     },
 
     users: {

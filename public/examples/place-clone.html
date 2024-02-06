@@ -21,10 +21,10 @@
         
 
         setInterval(async () => {
-            await conn.setItem('seconds', 0);
-            let s = await conn.getItem('seconds');
+            await conn.setItem('base/seconds', 0);
+            let s = await conn.getItem('base/seconds');
             s += 1;
-            await conn.setItem('seconds', s);
+            await conn.setItem('base/seconds', s);
             console.log(s)
         }, 1000)
     </script>

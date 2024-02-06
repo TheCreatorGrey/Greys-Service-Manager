@@ -244,38 +244,6 @@ function processRequest(raw, r_origin) {
         return getUserInfo(r.name)
     }
 
-    if (r.sessionID) { // Everything under this statement cannot be performed by unauthenticated or guest users. Mostly database operations.
-        if (authenticate(r.user, r.sessionID, r_origin)) {
-            database.users[r.user].lastOnline = getMDY(true);
-        
-            if (['get', 'set'].includes(r.type)) {
-                if (!(r_origin in database.apps)) {
-                    database.apps[r_origin] = { data: {}, childCategories: {}, items: {} };
-                }
-            }
-    
-            if (r.type === 'get') {
-                return getItemFromPath(database.apps[r_origin].data, r.path, r.user, r.prs, r.valOnly)
-            }
-    
-            if (r.type === 'set') {
-                return setItemFromPath(database.apps[r_origin].data, r.path, r.mode, r.value, r.user, r.perms)
-            }
-    
-            if (r.type === 'listCh') {
-                return listChildren(database.apps[r_origin].data, r.path)
-            }
-    
-            if (r.type === 'batchOp') {
-                return batchOperation(r.ops)
-            }
-        } else {
-            return 'BADAUTH'
-        }
-    } else {
-        return 'NOSESSION'
-    }
-
     if (r_origin === 'services.thecreatorgrey.site') { // Prevents other websites from being able to create sessions, register users, etc.
         if (r.type === 'newSession') {
             return makeSession(r.user, r.pass, r.sessionTarget)
@@ -307,6 +275,38 @@ function processRequest(raw, r_origin) {
         }
     } else {
         return 'NO_ADMIN'
+    }
+
+    if (r.sessionID) { // Everything under this statement cannot be performed by unauthenticated or guest users. Mostly database operations.
+        if (authenticate(r.user, r.sessionID, r_origin)) {
+            database.users[r.user].lastOnline = getMDY(true);
+        
+            if (['get', 'set'].includes(r.type)) {
+                if (!(r_origin in database.apps)) {
+                    database.apps[r_origin] = { data: {}, childCategories: {}, items: {} };
+                }
+            }
+    
+            if (r.type === 'get') {
+                return getItemFromPath(database.apps[r_origin].data, r.path, r.user, r.prs, r.valOnly)
+            }
+    
+            if (r.type === 'set') {
+                return setItemFromPath(database.apps[r_origin].data, r.path, r.mode, r.value, r.user, r.perms)
+            }
+    
+            if (r.type === 'listCh') {
+                return listChildren(database.apps[r_origin].data, r.path)
+            }
+    
+            if (r.type === 'batchOp') {
+                return batchOperation(r.ops)
+            }
+        } else {
+            return 'BADAUTH'
+        }
+    } else {
+        return 'NOSESSION'
     }
 }
 

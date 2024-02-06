@@ -18,7 +18,7 @@
     <script>
         //window.open('https://services.thecreatorgrey.site/login/embed.html', 'popup', 'popup=true')
         let conn = new ServiceConnection();
-        conn.setItem('seconds', s);
+        conn.setItem('seconds', 0);
 
         setInterval(async () => {
             let s = await conn.getItem('seconds');

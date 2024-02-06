@@ -236,6 +236,10 @@ function makeSession(user, pass, app) { // Takes login information and returns a
 function processRequest(raw, r_origin) {
     let r = JSON.parse(raw);
 
+    if (!(r_origin in database.apps)) {
+        database.apps[r_origin] = { data: {}, sessions: {}, childCategories: {}, items: {} };
+    }
+
     console.info(`Request from origin "${r_origin}": ${raw}`);
 
     // These individual if statements determine what the request 'wants' based on it's 'type' property.
@@ -280,12 +284,6 @@ function processRequest(raw, r_origin) {
     if (r.sessionID) { // Everything under this statement cannot be performed by unauthenticated or guest users. Mostly database operations.
         if (authenticate(r.user, r.sessionID, r_origin)) {
             database.users[r.user].lastOnline = getMDY(true);
-        
-            if (['get', 'set'].includes(r.type)) {
-                if (!(r_origin in database.apps)) {
-                    database.apps[r_origin] = { data: {}, childCategories: {}, items: {} };
-                }
-            }
     
             if (r.type === 'get') {
                 return getItemFromPath(database.apps[r_origin].data, r.path, r.user, r.prs, r.valOnly)

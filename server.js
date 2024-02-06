@@ -184,7 +184,7 @@ function checkChars(string) { // Checks if a given string contains anything exce
     return passes;
   }
 
-function authenticate(user, sessID) { // Do I need to explain what this does?
+function authenticate(user, sessID) { // Also self-explanitory
     if (user in database.users) {
         if ((database.sessions[user] === sessID)) {
             console.log(`Successful authentication attempt to '${user}'`);
@@ -240,7 +240,7 @@ function processRequest(raw, r_origin) {
             if (r.username.length < 15) {
                 if (r.username.length > 2) {
                     if (checkChars(r.username)) {
-                        if (r.password.length > 9) {
+                        if (r.key.length > 9) {
                             database.users[r.username] = { key: sha256(r.key), roles: [], joinDate: getMDY(true), lastOnline: getMDY(true) };
                             return true
                         } else {

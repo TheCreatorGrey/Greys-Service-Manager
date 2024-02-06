@@ -190,7 +190,7 @@ function checkChars(string) { // Checks if a given string contains anything exce
   }
 
 function authenticate(user, sessID, app) { // Also self-explanitory
-    if (user in database.users) {
+    if (database.users[user]) {
         if ((database.apps[app].sessions[user] === sessID)) {
             console.log(`Successful authentication attempt to '${user}'`);
             return true;

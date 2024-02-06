@@ -7,11 +7,16 @@ const app = express();
 app.use(express.static('public'));
 
 var database = { // I prefer not to use libraries where I can, so the database is basically just stored in this JSON.
-    data: {},
+    apps:{
+        'https://thecreatorgrey.site':{
+            data:{},
+            sessions:{}
+        },
+    },
+
     users: {
         guest: { key: sha256('password'), roles: [], joinDate: getMDY(true), lastOnline: getMDY(true) }, // this is temporary lol
-    },
-    sessions: {'public':'public'}
+    }
 };
 
 function getMDY(includetime = true) { // This poorly-named funtion gets the current UTC month, day, year and optionally the time.
@@ -184,9 +189,9 @@ function checkChars(string) { // Checks if a given string contains anything exce
     return passes;
   }
 
-function authenticate(user, sessID) { // Also self-explanitory
+function authenticate(user, sessID, app) { // Also self-explanitory
     if (user in database.users) {
-        if ((database.sessions[user] === sessID)) {
+        if ((database.apps[app].sessions[user] === sessID)) {
             console.log(`Successful authentication attempt to '${user}'`);
             return true;
         }
@@ -196,25 +201,29 @@ function authenticate(user, sessID) { // Also self-explanitory
     return false;
 }
 
-function makeSession(user, pass) { // Takes login information and spits out a random 16 char-long session ID.
-    if (user in database.users) {
-        if ((database.users[user].key === sha256(pass))) {
-            let id = '';
-            let takenIds = Object.values(database.sessions);
-            let chars = [...'qwertyuiopasdfghjklzxcvbnm1234567890QWERTYUIOPASDFGHJKLZXCVBNM'];
-
-            while ((takenIds.includes(id)) || (id === '')) {
-                id = '';
-                for (let i = 0; i < 16; i++) {
-                    id += chars[Math.floor(Math.random() * chars.length)]
+function makeSession(user, pass, app) { // Takes login information and returns a random 16 char-long session ID.
+    if (database.apps[app]) {
+        if (user in database.users) {
+            if ((database.users[user].key === sha256(pass))) {
+                let id = '';
+                let takenIds = Object.values(database.apps[app].sessions);
+                let chars = [...'qwertyuiopasdfghjklzxcvbnm1234567890QWERTYUIOPASDFGHJKLZXCVBNM'];
+    
+                while ((takenIds.includes(id)) || (id === '')) {
+                    id = '';
+                    for (let i = 0; i < 16; i++) {
+                        id += chars[Math.floor(Math.random() * chars.length)]
+                    }
                 }
+    
+                database.apps[app].sessions[user] = id;
+    
+                console.log(`Successful session creation attempt from @${user}`);
+                return id
             }
-
-            database.sessions[user] = id;
-
-            console.log(`Successful session creation attempt from @${user}`);
-            return id
         }
+    } else {
+        return 'NO_APP'
     }
 
     console.log(`Failed session creation attempt from @${user}`);
@@ -229,59 +238,32 @@ function processRequest(raw, r_origin) {
 
     console.info(`Request from origin "${r_origin}": ${raw}`);
 
-    if (r.type === 'newSession') { // These individual if statements determine what the request 'wants' based on it's 'type' property.
-        return makeSession(r.user, r.pass)
-    }
-
-    if (r.type === 'register') {
-        if (database.users[r.username]) {
-            return 'USERTAKEN'
-        } else {
-            if (r.username.length < 15) {
-                if (r.username.length > 2) {
-                    if (checkChars(r.username)) {
-                        if (r.key.length > 9) {
-                            database.users[r.username] = { key: sha256(r.key), roles: [], joinDate: getMDY(true), lastOnline: getMDY(true) };
-                            return true
-                        } else {
-                            return 'SHORTKEY'
-                        }
-                    } else {
-                        return 'BADCHARS'
-                    }
-                } else {
-                    return 'TOOFEWCHARS'
-                }
-            } else {
-                return 'TOOMANYCHARS'
-            }
-        }
-    }
+    // These individual if statements determine what the request 'wants' based on it's 'type' property.
 
     if (r.type === 'getUserInfo') {
         return getUserInfo(r.name)
     }
 
     if (r.sessionID) { // Everything under this statement cannot be performed by unauthenticated or guest users. Mostly database operations.
-        if (authenticate(r.user, r.sessionID)) {
+        if (authenticate(r.user, r.sessionID, r_origin)) {
             database.users[r.user].lastOnline = getMDY(true);
         
             if (['get', 'set'].includes(r.type)) {
-                if (!(r_origin in database.data)) {
-                    database.data[r_origin] = { childCategories: {}, items: {} };
+                if (!(r_origin in database.apps)) {
+                    database.apps[r_origin] = { data: {}, childCategories: {}, items: {} };
                 }
             }
     
             if (r.type === 'get') {
-                return getItemFromPath(database.data[r_origin], r.path, r.user, r.prs, r.valOnly)
+                return getItemFromPath(database.apps[r_origin].data, r.path, r.user, r.prs, r.valOnly)
             }
     
             if (r.type === 'set') {
-                return setItemFromPath(database.data[r_origin], r.path, r.mode, r.value, r.user, r.perms)
+                return setItemFromPath(database.apps[r_origin].data, r.path, r.mode, r.value, r.user, r.perms)
             }
     
             if (r.type === 'listCh') {
-                return listChildren(database.data[r_origin], r.path)
+                return listChildren(database.apps[r_origin].data, r.path)
             }
     
             if (r.type === 'batchOp') {
@@ -292,6 +274,39 @@ function processRequest(raw, r_origin) {
         }
     } else {
         return 'NOSESSION'
+    }
+
+    if (r_origin === 'services.thecreatorgrey.site') { // Prevents other websites from being able to create sessions, register users, etc.
+        if (r.type === 'newSession') {
+            return makeSession(r.user, r.pass, r.sessionTarget)
+        }
+
+        if (r.type === 'register') {
+            if (database.users[r.username]) {
+                return 'USERTAKEN'
+            } else {
+                if (r.username.length < 15) {
+                    if (r.username.length > 2) {
+                        if (checkChars(r.username)) {
+                            if (r.key.length > 9) {
+                                database.users[r.username] = { key: sha256(r.key), roles: [], joinDate: getMDY(true), lastOnline: getMDY(true) };
+                                return true
+                            } else {
+                                return 'SHORTKEY'
+                            }
+                        } else {
+                            return 'BADCHARS'
+                        }
+                    } else {
+                        return 'TOOFEWCHARS'
+                    }
+                } else {
+                    return 'TOOMANYCHARS'
+                }
+            }
+        }
+    } else {
+        return 'NO_ADMIN'
     }
 }
 

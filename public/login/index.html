@@ -34,6 +34,7 @@
     <script>
         const params = new URLSearchParams(window.location.search);
         let redir = params.get('redir');
+        let host = (new URL(redir)).hostname;
         let service = new ServiceConnection(true);
 
         // These prevent newlines in the login menu. I just duplicated them because I'm lazy
@@ -102,7 +103,8 @@
 
                     let sess = await service.requestSession(
                         username,
-                        passInput.value
+                        passInput.value,
+                        host
                     );
 
                     if (sess) {

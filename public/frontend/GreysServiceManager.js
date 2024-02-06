@@ -67,6 +67,16 @@ class ServiceConnection {
             'NOSESSION':{
                 type:'error',
                 meaning:'Your session ID is missing.'
+            },
+
+            'NO_ADMIN':{
+                type:'error',
+                meaning:'This website does not have administrative permission.'
+            },
+
+            'NO_APP':{
+                type:'error',
+                meaning:'Your app ID is not registered or does not exist.'
             }
         }
 
@@ -78,10 +88,12 @@ class ServiceConnection {
     }
 
     /**
-    * Requests and returns a session ID which can be used later.
+    * An internal function which is not intended for use by the user.
+    * 
+    * Requests and returns a session ID which can be used later. Can only be performed from the official Grey's Service Manager website.
     */
-    async requestSession(username, password) {
-        let newSess = await this.request({ type: 'newSession', user: username, pass: password });
+    async requestSession(username, password, app) {
+        let newSess = await this.request({ type: 'newSession', user: username, pass: password, sessionTarget: app});
 
         if (newSess === 'BADAUTH') {
             console.error('Session creation failed. Please make sure login is correct.');
@@ -95,7 +107,7 @@ class ServiceConnection {
     /**
     * An internal function which is not intended for use by the user.
     * 
-    * Makes an account creation request.
+    * Makes an account creation request. Can only be performed from the official Grey's Service Manager website.
     */
     async register(newUser, newPass) {
         return await this.request({

@@ -309,7 +309,8 @@ function processRequest(raw, r_origin) {
     }
 }
 
-app.get('/page:id', (req, res) => {
+app.get('/page/:id', (req, res) => {
+    console.log(req.params.id);
     res.send(database.pages[req.params.id]);
 });
 

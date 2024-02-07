@@ -9,6 +9,11 @@ app.use(express.static('public'));
 var database = { // I prefer not to use libraries where I can, so the database is basically just stored in this JSON.
     apps:{},
 
+    pages:{
+        'test':'<span>why hello there</span>',
+        'test2':'<span>why hello there again</span>',
+    },
+
     users: {
         guest: { key: sha256('password'), roles: [], joinDate: getMDY(true), lastOnline: getMDY(true) }, // this is temporary lol
     }
@@ -303,6 +308,10 @@ function processRequest(raw, r_origin) {
         return 'NOSESSION'
     }
 }
+
+app.get('/page:id', (req, res) => {
+    res.send(database.pages[req.params.id]);
+});
 
 app.use((req, res, next) => {
     res.header('Access-Control-Allow-Origin', '*');

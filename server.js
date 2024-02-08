@@ -247,7 +247,6 @@ function makeSession(user, pass, app) { // Takes login information and returns a
 function processRequest(raw, r_origin) {
     let OriginObj = new URL(r_origin);
     let originPath = OriginObj.pathname.split('/');
-    originPath.shift();
 
     let appID = originPath[1];
     console.log(originPath);
@@ -346,6 +345,8 @@ app.get('/app/:appID/:pageID', (req, res) => {
         if (!pageID) {
             pageID = 'main'
         }
+
+        console.log(pageID)
 
         let content = database.apps[appID].pages[pageID];
 

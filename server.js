@@ -14,8 +14,13 @@ var database = { // I prefer not to use libraries where I can, so the database i
             sessions:{},
 
             pages:{
-                'main':'<span>why hello there</span>'
-            }
+                'main':'<span>why hello there</span>',
+                'amogus':'<span>amogus (sus)</span><img src="https://th.bing.com/th/id/R.40d78af31f09a9807fbd038912cc9ddd?rik=dPjtwSXhiDF4qw&pid=ImgRaw&r=0">'
+            },
+
+            owner:'thecreatorgrey',
+
+            alias:null
         }
     },
 
@@ -247,7 +252,7 @@ function processRequest(raw, r_origin) {
     let appID = originPath[1];
     console.log(originPath);
 
-    if ((OriginObj.hostname === 'services.thecreatorgrey.site') && (originPath[0] === 'apps')) { // Prevents API from being used outside of the official website.
+    if ((OriginObj.hostname === 'services.thecreatorgrey.site')) { // Prevents API from being used outside of the official website.
         let r = JSON.parse(raw);
 
         //if (!(r_origin in database.apps)) {
@@ -260,6 +265,14 @@ function processRequest(raw, r_origin) {
     
         if (r.type === 'getUserInfo') {
             return getUserInfo(r.name)
+        }
+
+        if (r.type === 'getAppAlias') {
+            if (r.id in database.apps) {
+                return database.apps[r.id].alias
+            } else {
+                return 'NO_APP'
+            }
         }
         
         if (originPath[0] === 'login') { // Makes it so that sessions and accounts can only be made from the official login page.
@@ -330,10 +343,25 @@ app.get('/app/:appID/:pageID', (req, res) => {
     let pageID = req.params.pageID;
 
     if ((appID in database.apps)) {
-        res.send(database.apps[appID].pages[pageID]);
+        if (!pageID) {
+            pageID = 'main'
+        }
+
+        let content = database.apps[appID].pages[pageID];
+
+        content += `
+        
+        <!-- HTML injected by Grey's Service Manager -->
+
+        <script src="https://services.thecreatorgrey.site/frontend/GreysServiceManager.js"></script>
+
+        <!-- ======================================= -->
+
+        `
+
+        res.send(content);
     } else {
-        res.status(404);
-        res.send('The page you are looking for could not be found.');
+        res.status(404).send('The page you are looking for could not be found.');
     }
 });
 

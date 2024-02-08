@@ -25,7 +25,7 @@ class ServiceConnection {
                         Please continue with an account.
                     </span>
 
-                    <br><button id="GSMPromptButton" onclick="window.location.href = 'https://services.thecreatorgrey.site/login/?redir=${window.location.href}'">Continue</button>
+                    <br><button id="GSMPromptButton" onclick="window.location.href = 'https://services.thecreatorgrey.site/login/?id=${(new URL(window.location.href)).pathname.split('/')[1]}'">Continue</button>
                 </div>
                 `)
             }
@@ -81,7 +81,7 @@ class ServiceConnection {
 
             'BAD_ORIGIN':{
                 type:'error',
-                meaning:'This API can only be used by apps under services.thecreatorgrey.site/apps.'
+                meaning:'This API can only be used by apps under services.thecreatorgrey.site'
             }
         }
 

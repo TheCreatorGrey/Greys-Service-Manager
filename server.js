@@ -248,8 +248,8 @@ function processRequest(raw, r_origin) {
     let OriginObj = new URL(r_origin);
     let originPath = OriginObj.pathname.split('/');
 
-    let appID = originPath[1];
-    console.log(originPath);
+    let appID = originPath[2];
+    console.log(originPath, OriginObj.pathname);
 
     if ((OriginObj.hostname === 'services.thecreatorgrey.site')) { // Prevents API from being used outside of the official website.
         let r = JSON.parse(raw);
@@ -346,9 +346,9 @@ app.get('/app/:appID/:pageID', (req, res) => {
             pageID = 'main'
         }
 
-        console.log(pageID)
-
         let content = database.apps[appID].pages[pageID];
+        console.log(pageID, content)
+
 
         content += `
         

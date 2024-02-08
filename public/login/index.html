@@ -114,7 +114,7 @@
                             errorMsg.style.color = 'green';
                             errorMsg.innerText = 'Login successful. You should be redirected shortly...';
 
-                            window.location.href = `https:/services.thecreatorgrey.site/app/${appID}?sessID=${sess}&user=${username}`;
+                            window.location.href = `app/${appID}?sessID=${sess}&user=${username}`;
                         } else {
                             errorMsg.style.color = 'yellow';
                             errorMsg.innerText = 'Could not redirect because no ID was found.';

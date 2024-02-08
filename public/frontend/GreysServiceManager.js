@@ -2,10 +2,10 @@
 * An object through which you can communicate to the server.
 */
 class ServiceConnection {
-    constructor(guest=false, apiUrl = 'https://services.thecreatorgrey.site/api') {
+    constructor(guest=false) {
         this.params = new URLSearchParams(window.location.search);
 
-        this.apiUrl = apiUrl;
+        this.apiUrl = 'https://services.thecreatorgrey.site/api';
 
         if (guest) {
             console.info('You have initialized your ServiceConnection in guest mode. You will only be able to perform operations available to guests.')
@@ -69,14 +69,19 @@ class ServiceConnection {
                 meaning:'Your session ID is missing.'
             },
 
-            'NO_ADMIN':{
+            'NO_REGISTRATION_PERMISSION':{
                 type:'error',
-                meaning:'This website does not have administrative permission.'
+                meaning:'Client sites do not have permission make registrations or sessions.'
             },
 
             'NO_APP':{
                 type:'error',
                 meaning:'Your app ID is not registered or does not exist.'
+            },
+
+            'BAD_ORIGIN':{
+                type:'error',
+                meaning:'This API can only be used by apps under services.thecreatorgrey.site/apps.'
             }
         }
 

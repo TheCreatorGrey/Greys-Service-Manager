@@ -7,11 +7,16 @@ const app = express();
 app.use(express.static('public'));
 
 var database = { // I prefer not to use libraries where I can, so the database is basically just stored in this JSON.
-    apps:{},
+    apps:{
+        'portfolio':{
+            data:{ childCategories: {}, items: {} },
 
-    pages:{
-        'test':'<span>why hello there</span>',
-        'test2':'<span>why hello there again</span>',
+            sessions:{},
+
+            pages:{
+                'main':'<span>why hello there</span>'
+            }
+        }
     },
 
     users: {
@@ -232,86 +237,104 @@ function makeSession(user, pass, app) { // Takes login information and returns a
 }
 
 
-// This takes a request JSON and processes it. It authenticates the 
+// This takes a request JSON and processes it. It authenticates the
 // user then returns or performs the action that was requested.
 function processRequest(raw, r_origin) {
-    let r = JSON.parse(raw);
+    let OriginObj = new URL(r_origin);
+    let originPath = OriginObj.pathname.split('/');
+    originPath.shift();
 
-    if (!(r_origin in database.apps)) {
-        database.apps[r_origin] = { data: { childCategories: {}, items: {} }, sessions: {} };
-    }
+    let appID = originPath[1];
+    console.log(originPath);
 
-    console.info(`Request from origin "${r_origin}": ${raw}`);
+    if ((OriginObj.hostname === 'services.thecreatorgrey.site') && (originPath[0] === 'apps')) { // Prevents API from being used outside of the official website.
+        let r = JSON.parse(raw);
 
-    // These individual if statements determine what the request 'wants' based on it's 'type' property.
-
-    if (r.type === 'getUserInfo') {
-        return getUserInfo(r.name)
-    }
-
-    if (r_origin === 'services.thecreatorgrey.site') { // Prevents other websites from being able to create sessions, register users, etc.
-        if (r.type === 'newSession') {
-            return makeSession(r.user, r.pass, r.sessionTarget)
+        //if (!(r_origin in database.apps)) {
+        //    database.apps[r_origin] = { data: { childCategories: {}, items: {} }, sessions: {} };
+        //}
+    
+        console.info(`Request from origin "${r_origin}": ${raw}`);
+    
+        // These individual if statements determine what the request 'wants' based on it's 'type' property.
+    
+        if (r.type === 'getUserInfo') {
+            return getUserInfo(r.name)
         }
-
-        if (r.type === 'register') {
-            if (database.users[r.username]) {
-                return 'USERTAKEN'
-            } else {
-                if (r.username.length < 15) {
-                    if (r.username.length > 2) {
-                        if (checkChars(r.username)) {
-                            if (r.key.length > 9) {
-                                database.users[r.username] = { key: sha256(r.key), roles: [], joinDate: getMDY(true), lastOnline: getMDY(true) };
-                                return true
+        
+        if (originPath[0] === 'login') { // Makes it so that sessions and accounts can only be made from the official login page.
+            if (r.type === 'newSession') {
+                return makeSession(r.user, r.pass, r.sessionTarget)
+            }
+    
+            if (r.type === 'register') {
+                if (database.users[r.username]) {
+                    return 'USERTAKEN'
+                } else {
+                    if (r.username.length < 15) {
+                        if (r.username.length > 2) {
+                            if (checkChars(r.username)) {
+                                if (r.key.length > 9) {
+                                    database.users[r.username] = { key: sha256(r.key), roles: [], joinDate: getMDY(true), lastOnline: getMDY(true) };
+                                    return true
+                                } else {
+                                    return 'SHORTKEY'
+                                }
                             } else {
-                                return 'SHORTKEY'
+                                return 'BADCHARS'
                             }
                         } else {
-                            return 'BADCHARS'
+                            return 'TOOFEWCHARS'
                         }
                     } else {
-                        return 'TOOFEWCHARS'
+                        return 'TOOMANYCHARS'
                     }
-                } else {
-                    return 'TOOMANYCHARS'
                 }
             }
+        } else {
+            return 'NO_REGISTRATION_PERMISSION'
         }
-    } else {
-        return 'NO_ADMIN'
-    }
-
-    if (r.sessionID) { // Everything under this statement cannot be performed by unauthenticated or guest users. Mostly database operations.
-        if (authenticate(r.user, r.sessionID, r_origin)) {
-            database.users[r.user].lastOnline = getMDY(true);
     
-            if (r.type === 'get') {
-                return getItemFromPath(database.apps[r_origin].data, r.path, r.user, r.prs, r.valOnly)
-            }
-    
-            if (r.type === 'set') {
-                return setItemFromPath(database.apps[r_origin].data, r.path, r.mode, r.value, r.user, r.perms)
-            }
-    
-            if (r.type === 'listCh') {
-                return listChildren(database.apps[r_origin].data, r.path)
-            }
-    
-            if (r.type === 'batchOp') {
-                return batchOperation(r.ops)
+        if (r.sessionID) { // Everything under this statement cannot be performed by unauthenticated or guest users. Mostly database operations.
+            if (authenticate(r.user, r.sessionID, r_origin)) {
+                database.users[r.user].lastOnline = getMDY(true);
+        
+                if (r.type === 'get') {
+                    return getItemFromPath(database.apps[r_origin].data, r.path, r.user, r.prs, r.valOnly)
+                }
+        
+                if (r.type === 'set') {
+                    return setItemFromPath(database.apps[r_origin].data, r.path, r.mode, r.value, r.user, r.perms)
+                }
+        
+                if (r.type === 'listCh') {
+                    return listChildren(database.apps[r_origin].data, r.path)
+                }
+        
+                if (r.type === 'batchOp') {
+                    return batchOperation(r.ops)
+                }
+            } else {
+                return 'BADAUTH'
             }
         } else {
-            return 'BADAUTH'
+            return 'NOSESSION'
         }
     } else {
-        return 'NOSESSION'
+        return 'BAD_ORIGIN'
     }
 }
 
-app.get('/page/:id', (req, res) => {
-    console.log(req.params.id);
-    res.send(database.pages[req.params.id]);
+app.get('/app/:appID/:pageID', (req, res) => {
+    let appID = req.params.appID;
+    let pageID = req.params.pageID;
+
+    if ((appID in database.apps)) {
+        res.send(database.apps[appID].pages[pageID]);
+    } else {
+        res.status(404);
+        res.send('The page you are looking for could not be found.');
+    }
 });
 
 app.use((req, res, next) => {
@@ -327,7 +350,7 @@ app.post('/api', (req, res) => { // This eyesore chunk of code manages the reque
     });
 
     req.on('end', () => {
-        res.status(200).send({ res: processRequest(body, req.get('host')) });
+        res.status(200).send({ res: processRequest(body, req.get('origin')) });
     });
 });
 

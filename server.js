@@ -1,33 +1,11 @@
-const express = require('express');
-var sha256 = require('js-sha256');
-var perms = require('./permissions.js');
-//var CryptoJS = require('crypto-js');
+import express from 'express';
+import sha256 from 'crypto-js/sha256.js';
+import cryptoJs from 'crypto-js';
+import { database } from './DB';
+import { authenticate, makeSession } from './security'
 
 const app = express();
 app.use(express.static('public'));
-
-var database = { // I prefer not to use libraries where I can, so the database is basically just stored in this JSON.
-    apps:{
-        'portfolio':{
-            data:{ childCategories: {}, items: {} },
-
-            sessions:{},
-
-            pages:{
-                'main':'<span>why hello there</span>',
-                'amogus':'<span>amogus (sus)</span><img src="https://th.bing.com/th/id/R.40d78af31f09a9807fbd038912cc9ddd?rik=dPjtwSXhiDF4qw&pid=ImgRaw&r=0">'
-            },
-
-            owner:'thecreatorgrey',
-
-            alias:null
-        }
-    },
-
-    users: {
-        guest: { key: sha256('password'), roles: [], joinDate: getMDY(true), lastOnline: getMDY(true) }, // this is temporary lol
-    }
-};
 
 function getMDY(includetime = true) { // This poorly-named funtion gets the current UTC month, day, year and optionally the time.
     let d = new Date();
@@ -39,151 +17,6 @@ function getMDY(includetime = true) { // This poorly-named funtion gets the curr
     }
 
     return result;
-}
-
-function getUserInfo(user) { // Self-explanitory.
-    let fullInfo = database.users[user];
-
-    if (fullInfo) {
-        return { // Obviously, we don't want to return everything.
-            name: user,
-            roles: fullInfo.roles,
-            joinDate: fullInfo.joinDate,
-            lastOnline: fullInfo.lastOnline
-        }
-    }
-}
-
-function listChildren(obj, path, user) { // This takes a database directory and returns a list of it's contents.
-    let pathList = path.split("/");
-    let userInfo = getUserInfo(user);
-    let current = obj;
-
-    for (p in pathList) {
-        let catName = pathList[p];
-
-        let newCurr = current.childCategories[catName];
-        if (newCurr) {
-            current = newCurr;
-        } else {
-            return 'NOITEM'
-        }
-    }
-
-    let accessibleItems = {}
-    for (let i in current.items) {
-        let item = current.items[i];
-        if (perms.checkPermission(item, userInfo, 'read')) {
-            accessibleItems[i] = item
-        }
-    }
-
-    return {categories:Object.keys(current.childCategories), items:accessibleItems}
-}
-
-function getItemFromPath(obj, path, user, processes = [], intent = 'read', valOnly=true) { // The intent argument tells the function which permission to check for when determining whether the user has access or not. The only case in which write is used instead of read is in the set function.
-    let pathList = path.split("/");
-    let current = obj;
-    console.log(JSON.stringify(obj))
-
-    for (p in pathList) {
-        let catName = pathList[p];
-
-        let newCurr = current.childCategories[catName];
-        if (newCurr) {
-            current = newCurr;
-            console.log(JSON.stringify('current') + 'amogus')
-        } else {
-            return 'NOITEM'
-        }
-    }
-
-    let item = current.items[pathList[pathList.length - 1]];
-    if (item) {
-        if (perms.checkPermission(item, getUserInfo(user), intent)) { // Checks if the user has access to the item
-            try {
-                let itemClone = JSON.parse(JSON.stringify({ item: item })).item; // If there was a less idiotic way to clone things in JS, I would do it
-
-                for (o of processes) {
-                    if (o.type === 'slice') {
-                        itemClone = itemClone.slice(o.start, o.end)
-                    }
-                    if (o.type === 'sliceAfterItem') {
-                        itemClone = itemClone.slice(itemClone.indexOf(o.item) + 1)
-                    }
-                    if (o.type === 'toLength') {
-                        itemClone = itemClone.length
-                    }
-                    //if (o.type === 'toChild') {
-                    //    itemClone = itemClone[o.childName]
-                    //}
-                }
-
-                if (valOnly) {
-                    return itemClone.value
-                } else {
-                    return itemClone
-                }
-            } catch {
-                return 'FAILEDPRS'
-            }
-        } else {
-            return 'NOACCESS'
-        }
-    } else {
-        return 'NOITEM'
-    }
-}
-
-function setItemFromPath(obj, path, mode, value, user, permissions) { // Takes a database directory and sets the specified item to the specified value. Also checks user's permission.
-    if (getItemFromPath(obj, path, user, [], 'write') === 'NOACCESS') {
-        return 'NOACCESS'
-    } else {
-        let pathList = path.split("/");
-        let current = obj;
-
-        for (p in pathList) {
-            let catName = pathList[p];
-
-            if (!current.childCategories[catName]) {
-                current.childCategories[catName] = { items: {}, childCategories: {} };
-            }
-
-            console.log(catName, pathList[pathList.length-1]);
-            if (catName === pathList[pathList.length-1]) {
-                let item = current.childCategories[catName].items[pathList[pathList.length - 1]];
-
-                if (mode === 'set') {
-                    item = { value: value, owner: user, p:perms.makePermCode(permissions), cd: getMDY(true), lm: getMDY(true), id:current.childCategories[catName].items.length  }
-                } else if (mode === 'append') {
-                    item.value.push(value);
-                    item.lm = getMDY();
-                } else {
-                    return 'INVALIDMODE'
-                }
-            }
-
-            current = current.childCategories[catName];
-        }
-    }
-}
-
-function batchOperation(ops, obj, user) { // Performs multiple operations in one go.
-    if (ops.length < 21) {
-        let responses = [];
-
-        for (o of ops) {
-            if (o.type === 'get') {
-                responses += getItemFromPath(obj, o.path, user, o.processes, o.valOnly)
-            } else if (o.type === 'mod') {
-                responses += setItemFromPath(obj, o.path, o.mode, o.value, user, o.perms)
-            }
-        }
-
-        return responses
-    } else {
-        return 'OPLIMIT'
-    }
 }
 
 function checkChars(string) { // Checks if a given string contains anything except for letters and numbers.
@@ -198,47 +31,6 @@ function checkChars(string) { // Checks if a given string contains anything exce
     }
 
     return passes;
-  }
-
-function authenticate(user, sessID, app) { // Also self-explanitory
-    if (database.users[user]) {
-        if ((database.apps[app].sessions[user] === sessID)) {
-            console.log(`Successful authentication attempt to '${user}'`);
-            return true;
-        }
-    }
-
-    console.log(`Failed authentication attempt to '${user}'`);
-    return false;
-}
-
-function makeSession(user, pass, app) { // Takes login information and returns a random 16 char-long session ID.
-    if (database.apps[app]) {
-        if (user in database.users) {
-            if ((database.users[user].key === sha256(pass))) {
-                let id = '';
-                let takenIds = Object.values(database.apps[app].sessions);
-                let chars = [...'qwertyuiopasdfghjklzxcvbnm1234567890QWERTYUIOPASDFGHJKLZXCVBNM'];
-    
-                while ((takenIds.includes(id)) || (id === '')) {
-                    id = '';
-                    for (let i = 0; i < 16; i++) {
-                        id += chars[Math.floor(Math.random() * chars.length)]
-                    }
-                }
-    
-                database.apps[app].sessions[user] = id;
-    
-                console.log(`Successful session creation attempt from @${user}`);
-                return id
-            }
-        }
-    } else {
-        return 'NO_APP'
-    }
-
-    console.log(`Failed session creation attempt from @${user}`);
-    return 'BADAUTH'
 }
 
 
@@ -307,7 +99,7 @@ function processRequest(raw, r_origin) {
             return 'NO_REGISTRATION_PERMISSION'
         }
     
-        if (r.sessionID) { // Everything under this statement cannot be performed by unauthenticated or guest users. Mostly database operations.
+        if (r.sessionID) { // Everything under this statement can only be performed by authenticated users. Mostly database operations.
             if (authenticate(r.user, r.sessionID, r_origin)) {
                 database.users[r.user].lastOnline = getMDY(true);
         
@@ -360,14 +152,14 @@ app.get('/app/:appID/:pageID', (req, res) => {
 
         `
 
-        res.send(content);
+        res.status(200).send(content);
     } else {
         res.status(404).send('The page you are looking for could not be found.');
     }
 });
 
 app.use((req, res, next) => {
-    res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Origin', 'services.thecreatorgrey.site');
     res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
     next();
 });

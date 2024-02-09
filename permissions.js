@@ -17,7 +17,7 @@ let permObj = {
     'write': ['*admin', 'guest'],
 }
 
-function extractPermCode(code) {
+export function extractPermCode(code) {
     let newObj = {};
 
     for (let sect of code.split('/')) {
@@ -52,7 +52,7 @@ function extractPermCode(code) {
     return newObj
 }
 
-function makePermCode(permObj) {
+export function makePermCode(permObj) {
     let code = '';
 
     // This creates a compact code from a readable permission object.
@@ -98,7 +98,7 @@ function makePermCode(permObj) {
     return code
 }
 
-function checkPermission(item, userInfo, intent) {
+export function checkPermission(item, userInfo, intent) {
     let pObj = extractPermCode(item.p);
     let whiteList = pObj[intent];
 
@@ -120,5 +120,3 @@ function checkPermission(item, userInfo, intent) {
 
     return false
 }
-
-module.exports = { checkPermission, makePermCode, extractPermCode, roles, permissions }

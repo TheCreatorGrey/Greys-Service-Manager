@@ -1,4 +1,4 @@
-import { database } from "./DB";
+import { database } from "./DB.js";
 
 export function generateID(ids, length=16) {
     let id = '';

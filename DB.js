@@ -1,4 +1,4 @@
-import {makePermCode, checkPermission} from './permissions';
+import {makePermCode, checkPermission} from './permissions.js';
 
 export var database = { // I prefer not to use libraries where I can, so the database is basically just stored in this JSON.
     apps:{

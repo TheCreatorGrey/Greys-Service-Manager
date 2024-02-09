@@ -1,8 +1,8 @@
 import express from 'express';
 import sha256 from 'crypto-js/sha256.js';
 import cryptoJs from 'crypto-js';
-import { database } from './DB';
-import { authenticate, makeSession } from './security'
+import { database } from './DB.js';
+import { authenticate, makeSession } from './security.js'
 
 const app = express();
 app.use(express.static('public'));

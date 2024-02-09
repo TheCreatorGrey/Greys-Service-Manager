@@ -7,6 +7,8 @@ import { authenticate, makeSession } from './security.js'
 const app = express();
 app.use(express.static('public'));
 
+database.users.guest = { key: sha256('password'), roles: [], joinDate: getMDY(true), lastOnline: getMDY(true) }, // this is temporary lol
+
 function getMDY(includetime = true) { // This poorly-named funtion gets the current UTC month, day, year and optionally the time.
     let d = new Date();
     let result = { day: d.getUTCDate(), month: d.getUTCMonth(), year: d.getUTCFullYear() };

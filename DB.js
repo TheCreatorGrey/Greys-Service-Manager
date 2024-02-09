@@ -1,5 +1,4 @@
 import {makePermCode, checkPermission} from './permissions.js';
-import sha256 from 'crypto-js/sha256.js';
 
 export var database = { // I prefer not to use libraries where I can, so the database is basically just stored in this JSON.
     apps:{
@@ -19,9 +18,7 @@ export var database = { // I prefer not to use libraries where I can, so the dat
         }
     },
 
-    users: {
-        guest: { key: sha256('password'), roles: [], joinDate: getMDY(true), lastOnline: getMDY(true) }, // this is temporary lol
-    }
+    users: {}
 };
 
 

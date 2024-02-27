@@ -124,7 +124,7 @@ app.get('/:appID/:pageID?', (req, res) => {
         console.log(pageID, content)
 
 
-        content += `
+        content = `
         
         <!-- HTML injected by Grey's Service Manager -->
 
@@ -133,7 +133,7 @@ app.get('/:appID/:pageID?', (req, res) => {
 
         <!-- ======================================= -->
 
-        `
+        ` + content;
 
         res.status(200).send(content);
     } else {

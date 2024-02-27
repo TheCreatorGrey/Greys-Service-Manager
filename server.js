@@ -27,7 +27,7 @@ function checkChars(string) { // Checks if a given string contains anything exce
 // This takes a request JSON and processes it. It authenticates the
 // user then returns or performs the action that was requested.
 function processRequest(raw, r_origin) {
-    let OriginObj = new URL(r_origin);
+    let OriginObj = r_origin;//new URL(r_origin);
     let originPath = OriginObj.pathname.split('/');
 
     console.log(originPath, OriginObj.pathname);

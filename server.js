@@ -28,7 +28,7 @@ function checkChars(string) { // Checks if a given string contains anything exce
 // user then returns or performs the action that was requested.
 function processRequest(raw, r_origin) {
     let OriginObj = new URL(r_origin);
-    let originPath = OriginObj.pathname;
+    let originPath = OriginObj.pathname.split("/");
 
     console.log(originPath, OriginObj, r_origin);
 
@@ -51,7 +51,7 @@ function processRequest(raw, r_origin) {
 
     console.log(originPath)
     
-    if (originPath[0] === 'login') { // Makes it so that sessions and accounts can only be made from the official login page.
+    if (originPath[1] === 'login') { // Makes it so that sessions and accounts can only be made from the official login page.
         if (r.type === 'newSession') {
             return makeSession(r.user, r.pass, r.sessionTarget)
         }

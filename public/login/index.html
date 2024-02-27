@@ -35,7 +35,7 @@
         const params = new URLSearchParams(window.location.search);
         let redirect = params.get('url');
         let appID = params.get('id');
-        let service = new ServiceConnection(true);
+        let service = new ServiceConnection(null, true);
 
         // These prevent newlines in the login menu. I just duplicated them because I'm lazy
         document.getElementById("usernameInput").addEventListener("keydown", function(e) {

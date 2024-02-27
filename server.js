@@ -1,6 +1,6 @@
 import express from 'express';
 import sha256 from 'crypto-js/sha256.js';
-import cryptoJs from 'crypto-js';
+//import cryptoJs from 'crypto-js';
 import { database, getMDY } from './DB.js';
 import { authenticate, makeSession } from './security.js'
 

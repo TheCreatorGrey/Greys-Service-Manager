@@ -33,7 +33,7 @@ export function authenticate(user, sessID, app) { // Also self-explanitory
 
 
 export function makeSession(user, pass, app) { // Takes login information and returns a random 16 char-long session ID.
-    if (app in database.apps[app]) {
+    if (app in database.apps) {
         if (user in database.users) {
             if ((database.users[user].key === sha256(pass))) {
 

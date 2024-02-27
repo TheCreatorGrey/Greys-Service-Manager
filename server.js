@@ -109,7 +109,7 @@ function processRequest(raw, r_origin) {
     }
 }
 
-app.get('/app/:appID/:pageID', (req, res) => {
+app.get('/:appID/:pageID', (req, res) => {
     let appID = req.params.appID;
     let pageID = req.params.pageID;
 
@@ -136,6 +136,33 @@ app.get('/app/:appID/:pageID', (req, res) => {
     } else {
         res.status(404).send('The page you are looking for could not be found.');
     }
+});
+
+app.get('/:appID/css', (req, res) => {
+    let appID = req.params.appID;
+    let content;
+
+    if (appID) {
+        content = database.apps[appID].stylesheet;
+    } else {
+        content = '404 not found'
+    }
+
+    res.status(200).send(content);
+});
+
+app.get('/:appID/script/:scriptID', (req, res) => {
+    let appID = req.params.appID;
+    let scriptID = req.params.scriptID;
+    let content;
+
+    if (appID) {
+        content = database.apps[appID].scripts[scriptID];
+    } else {
+        content = '404 not found'
+    }
+
+    res.status(200).send(content);
 });
 
 app.use((req, res, next) => {

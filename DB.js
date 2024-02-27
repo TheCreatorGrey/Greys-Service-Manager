@@ -2,26 +2,13 @@ import {makePermCode, checkPermission} from './permissions.js';
 
 export var database = { // I prefer not to use libraries where I can, so the database is basically just stored in this JSON.
     apps:{
-        'portfolio':{
+        'greyschat':{
             data:{ childCategories: {}, items: {} },
 
             sessions:{},
 
             pages:{
-                'main':'<span>why hello there</span>',
-                'amogus':'<span>amogus (sus)</span><img src="https://th.bing.com/th/id/R.40d78af31f09a9807fbd038912cc9ddd?rik=dPjtwSXhiDF4qw&pid=ImgRaw&r=0">'
-            },
-
-            owner:'thecreatorgrey'
-        },
-
-        'portfolio':{
-            data:{ childCategories: {}, items: {} },
-
-            sessions:{},
-
-            pages:{
-                'chat':`
+                'main':`
                 <!DOCTYPE html>
                     <html lang="en">
                     <head>
@@ -54,6 +41,82 @@ export var database = { // I prefer not to use libraries where I can, so the dat
                 </html>
                 `
             },
+
+            scripts:{
+                'index':`
+                console.log("amogus")
+                `
+            },
+
+            stylesheet:`
+                @font-face {
+                    font-family: 'Header';
+                    src: url('./assets/PixelifySans-Regular.ttf');
+                }
+                
+                @font-face {
+                    font-family: 'Montserrat';
+                    src: url('./assets/Montserrat-Medium.ttf');
+                }
+                
+                body {
+                    background-color: rgb(32, 32, 32);
+                }
+                
+                .msgBoard {
+                    width: 100%;;
+                    height: calc(100% - 60px);
+                    position: absolute;
+                    bottom: 0;
+                    left: 0;
+                }
+                
+                .head {
+                    position: absolute; 
+                }
+                
+                .head-text {
+                    font-size: 50px; 
+                    line-height:50px; 
+                    vertical-align: top; 
+                    display: inline; 
+                    color: white; 
+                    font-family: Header;
+                }
+                
+                #msgContainer {
+                    background-color: rgb(20, 20, 20);
+                    width:100%;
+                    height: calc(100% - 60px);
+                    overflow-y: auto;
+                    color: white;
+                    font-size: .5cm;
+                    font-family: Montserrat;
+                }
+                
+                #msgEntry {
+                    width: calc(100% - 65px);
+                    height: 55px;
+                    border: 0;
+                    padding: 0;
+                    margin: 0;
+                    resize: none;
+                    background-color: rgb(40, 40, 40);
+                    color: white;
+                    font-family: Montserrat;
+                    font-size: .5cm;
+                }
+                
+                #sendBtn {
+                    border:0;
+                    width: 60px;
+                    height: 55px;
+                    vertical-align: top;
+                    background-color: rgb(40, 100, 40);
+                    color: white;
+                    font-family: Montserrat;
+                }
+            `,
 
             owner:'thecreatorgrey'
         }

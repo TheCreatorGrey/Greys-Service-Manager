@@ -14,7 +14,6 @@ export var database = { // I prefer not to use libraries where I can, so the dat
                     <head>
                         <meta charset="UTF-8">
                         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                        <meta http-equiv="X-UA-Compatible" content="ie=edge">
                         <title>Grey's Chatroom</title>
                     </head>
                     <body>
@@ -34,8 +33,7 @@ export var database = { // I prefer not to use libraries where I can, so the dat
                             </span>
                         </div>
                     <script src="https://unpkg.com/peerjs@1.5.1/dist/peerjs.min.js"></script>
-                    <script src="encryptor.js"></script>
-                    <script src="index.js"></script>
+                    <script src="https://services.thecreatorgrey.site/greyschat/asset/script/index"></script>
                   </body>
                 </html>
                 `
@@ -43,7 +41,10 @@ export var database = { // I prefer not to use libraries where I can, so the dat
 
             scripts:{
                 'index':`
-                console.log("amogus")
+                console.log("amogus");
+
+                let sc = new ServiceConnection();
+                sc.setItem('main/chatval', 'hello');
                 `
             },
 

@@ -48,6 +48,8 @@ function processRequest(raw, r_origin) {
     if (r.type === 'getUserInfo') {
         return getUserInfo(r.name)
     }
+
+    console.log(originPath)
     
     if (originPath[0] === 'login') { // Makes it so that sessions and accounts can only be made from the official login page.
         if (r.type === 'newSession') {
@@ -168,11 +170,11 @@ app.get('/:appID/asset/script/:scriptID', (req, res) => {
     res.status(200).send(content);
 });
 
-app.use((req, res, next) => {
-    res.header('Access-Control-Allow-Origin', 'services.thecreatorgrey.site');
-    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
-    next();
-});
+//app.use((req, res, next) => {
+//    res.header('Access-Control-Allow-Origin', 'services.thecreatorgrey.site');
+//    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+//    next();
+//});
 
 app.post('/api', (req, res) => { // This eyesore chunk of code manages the requests.
     let body = '';

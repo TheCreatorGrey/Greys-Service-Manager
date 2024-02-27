@@ -183,7 +183,7 @@ app.post('/api', (req, res) => { // This eyesore chunk of code manages the reque
     });
 
     req.on('end', () => {
-        res.status(200).send({ res: processRequest(body, req.get('host'))});
+        res.status(200).send({ res: processRequest(body, req.originalUrl)});
     });
 });
 

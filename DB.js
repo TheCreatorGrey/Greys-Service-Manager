@@ -43,7 +43,7 @@ export var database = { // I prefer not to use libraries where I can, so the dat
                 'index':`
                 console.log("amogus");
 
-                let sc = new ServiceConnection();
+                let sc = new ServiceConnection("greyschat");
                 sc.setItem('main/chatval', 'hello');
                 `
             },

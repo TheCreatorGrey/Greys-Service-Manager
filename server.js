@@ -1,25 +1,13 @@
 import express from 'express';
 import sha256 from 'crypto-js/sha256.js';
 import cryptoJs from 'crypto-js';
-import { database } from './DB.js';
+import { database, getMDY } from './DB.js';
 import { authenticate, makeSession } from './security.js'
 
 const app = express();
 app.use(express.static('public'));
 
 database.users.guest = { key: sha256('password'), roles: [], joinDate: getMDY(true), lastOnline: getMDY(true) }, // this is temporary lol
-
-function getMDY(includetime = true) { // This poorly-named funtion gets the current UTC month, day, year and optionally the time.
-    let d = new Date();
-    let result = { day: d.getUTCDate(), month: d.getUTCMonth(), year: d.getUTCFullYear() };
-
-    if (includetime) {
-        result.hour = d.getUTCHours();
-        result.minute = d.getUTCMinutes();
-    }
-
-    return result;
-}
 
 function checkChars(string) { // Checks if a given string contains anything except for letters and numbers.
     let allowed = [...'qwertyuiopasdfghjklzxcvbnm1234567890_-'];

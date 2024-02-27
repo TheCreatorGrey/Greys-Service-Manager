@@ -63,6 +63,19 @@ export var database = { // I prefer not to use libraries where I can, so the dat
 };
 
 
+export function getMDY(includetime = true) { // This poorly-named funtion gets the current UTC month, day, year and optionally the time.
+    let d = new Date();
+    let result = { day: d.getUTCDate(), month: d.getUTCMonth(), year: d.getUTCFullYear() };
+
+    if (includetime) {
+        result.hour = d.getUTCHours();
+        result.minute = d.getUTCMinutes();
+    }
+
+    return result;
+}
+
+
 export function getUserInfo(user) { // Self-explanitory.
     let fullInfo = database.users[user];
 

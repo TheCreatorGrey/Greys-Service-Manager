@@ -12,9 +12,50 @@ export var database = { // I prefer not to use libraries where I can, so the dat
                 'amogus':'<span>amogus (sus)</span><img src="https://th.bing.com/th/id/R.40d78af31f09a9807fbd038912cc9ddd?rik=dPjtwSXhiDF4qw&pid=ImgRaw&r=0">'
             },
 
-            owner:'thecreatorgrey',
+            owner:'thecreatorgrey'
+        },
 
-            alias:null
+        'portfolio':{
+            data:{ childCategories: {}, items: {} },
+
+            sessions:{},
+
+            pages:{
+                'chat':`
+                <!DOCTYPE html>
+                    <html lang="en">
+                    <head>
+                        <meta charset="UTF-8">
+                        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                        <meta http-equiv="X-UA-Compatible" content="ie=edge">
+                        <title>Grey's Chatroom</title>
+                        <link rel="stylesheet" href="style.css">
+                    </head>
+                    <body>
+                        <span class="head">
+                        <img src="./assets/icon.png" alt="icon" style="height: 50px;">
+                        <h1 class="head-text">Grey's Chatroom</h1>
+                        <h1 class="head-text" style="font-family: sans-serif; font-size: 20px; color: darkgray;">With PeerJS</h1>
+                        </span>
+                    
+                        <div class="msgBoard">
+                            <div id="msgContainer">
+                            </div>
+                    
+                            <span style="width: 100%;">
+                                <textarea name="input" id="msgEntry"></textarea>
+                                <button id="sendBtn">Send</button>
+                            </span>
+                        </div>
+                    <script src="https://unpkg.com/peerjs@1.5.1/dist/peerjs.min.js"></script>
+                    <script src="encryptor.js"></script>
+                    <script src="index.js"></script>
+                  </body>
+                </html>
+                `
+            },
+
+            owner:'thecreatorgrey'
         }
     },
 

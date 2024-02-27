@@ -42,92 +42,82 @@ function processRequest(raw, r_origin) {
     let OriginObj = new URL(r_origin);
     let originPath = OriginObj.pathname.split('/');
 
-    let appID = originPath[2];
     console.log(originPath, OriginObj.pathname);
 
-    if ((OriginObj.hostname === 'services.thecreatorgrey.site')) { // Prevents API from being used outside of the official website.
-        let r = JSON.parse(raw);
+    let r = JSON.parse(raw);
 
-        //if (!(r_origin in database.apps)) {
-        //    database.apps[r_origin] = { data: { childCategories: {}, items: {} }, sessions: {} };
-        //}
+    let appID = r.appID;
+    //if ()
+
+    //if (!(r_origin in database.apps)) {
+    //    database.apps[r_origin] = { data: { childCategories: {}, items: {} }, sessions: {} };
+    //}
+
+    console.info(`Request from origin "${r_origin}": ${raw}`);
+
+    // These individual if statements determine what the request 'wants' based on it's 'type' property.
+
+    if (r.type === 'getUserInfo') {
+        return getUserInfo(r.name)
+    }
     
-        console.info(`Request from origin "${r_origin}": ${raw}`);
-    
-        // These individual if statements determine what the request 'wants' based on it's 'type' property.
-    
-        if (r.type === 'getUserInfo') {
-            return getUserInfo(r.name)
+    if (originPath[0] === 'login') { // Makes it so that sessions and accounts can only be made from the official login page.
+        if (r.type === 'newSession') {
+            return makeSession(r.user, r.pass, r.sessionTarget)
         }
 
-        if (r.type === 'getAppAlias') {
-            if (r.id in database.apps) {
-                return database.apps[r.id].alias
+        if (r.type === 'register') {
+            if (database.users[r.username]) {
+                return 'USERTAKEN'
             } else {
-                return 'NO_APP'
-            }
-        }
-        
-        if (originPath[0] === 'login') { // Makes it so that sessions and accounts can only be made from the official login page.
-            if (r.type === 'newSession') {
-                return makeSession(r.user, r.pass, r.sessionTarget)
-            }
-    
-            if (r.type === 'register') {
-                if (database.users[r.username]) {
-                    return 'USERTAKEN'
-                } else {
-                    if (r.username.length < 15) {
-                        if (r.username.length > 2) {
-                            if (checkChars(r.username)) {
-                                if (r.key.length > 9) {
-                                    database.users[r.username] = { key: sha256(r.key), roles: [], joinDate: getMDY(true), lastOnline: getMDY(true) };
-                                    return true
-                                } else {
-                                    return 'SHORTKEY'
-                                }
+                if (r.username.length < 15) {
+                    if (r.username.length > 2) {
+                        if (checkChars(r.username)) {
+                            if (r.key.length > 9) {
+                                database.users[r.username] = { key: sha256(r.key), roles: [], joinDate: getMDY(true), lastOnline: getMDY(true) };
+                                return true
                             } else {
-                                return 'BADCHARS'
+                                return 'SHORTKEY'
                             }
                         } else {
-                            return 'TOOFEWCHARS'
+                            return 'BADCHARS'
                         }
                     } else {
-                        return 'TOOMANYCHARS'
+                        return 'TOOFEWCHARS'
                     }
+                } else {
+                    return 'TOOMANYCHARS'
                 }
             }
-        } else {
-            return 'NO_REGISTRATION_PERMISSION'
-        }
-    
-        if (r.sessionID) { // Everything under this statement can only be performed by authenticated users. Mostly database operations.
-            if (authenticate(r.user, r.sessionID, r_origin)) {
-                database.users[r.user].lastOnline = getMDY(true);
-        
-                if (r.type === 'get') {
-                    return getItemFromPath(database.apps[r_origin].data, r.path, r.user, r.prs, r.valOnly)
-                }
-        
-                if (r.type === 'set') {
-                    return setItemFromPath(database.apps[r_origin].data, r.path, r.mode, r.value, r.user, r.perms)
-                }
-        
-                if (r.type === 'listCh') {
-                    return listChildren(database.apps[r_origin].data, r.path)
-                }
-        
-                if (r.type === 'batchOp') {
-                    return batchOperation(r.ops)
-                }
-            } else {
-                return 'BADAUTH'
-            }
-        } else {
-            return 'NOSESSION'
         }
     } else {
-        return 'BAD_ORIGIN'
+        return 'NO_REGISTRATION_PERMISSION'
+    }
+
+    if (r.sessionID) { // Everything under this statement can only be performed by authenticated users. Mostly database operations.
+        if (authenticate(r.user, r.sessionID, r_origin)) {
+            database.users[r.user].lastOnline = getMDY(true);
+    
+            if (r.type === 'get') {
+                return getItemFromPath(database.apps[r_origin].data, r.path, r.user, r.prs, r.valOnly)
+            }
+    
+            if (r.type === 'set') {
+                return setItemFromPath(database.apps[r_origin].data, r.path, r.mode, r.value, r.user, r.perms)
+            }
+    
+            if (r.type === 'listCh') {
+                return listChildren(database.apps[r_origin].data, r.path)
+            }
+    
+            if (r.type === 'batchOp') {
+                return batchOperation(r.ops)
+            }
+        } else {
+            return 'BADAUTH'
+        }
+    } else {
+        return 'NOSESSION'
     }
 }
 

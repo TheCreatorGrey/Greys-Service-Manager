@@ -2,10 +2,11 @@
 * An object through which you can communicate to the server.
 */
 class ServiceConnection {
-    constructor(guest=false) {
+    constructor(appID, guest=false) {
         this.params = new URLSearchParams(window.location.search);
 
         this.apiUrl = 'https://services.thecreatorgrey.site/api';
+        this.appID = appID;
 
         if (guest) {
             console.info('You have initialized your ServiceConnection in guest mode. You will only be able to perform operations available to guests.')
@@ -25,7 +26,7 @@ class ServiceConnection {
                         Please continue with an account.
                     </span>
 
-                    <br><button id="GSMPromptButton" onclick="window.location.href = 'https://services.thecreatorgrey.site/login/?id=${(new URL(window.location.href)).pathname.split('/')[1]}'">Continue</button>
+                    <br><button id="GSMPromptButton" onclick="window.location.href = 'https://services.thecreatorgrey.site/login/?id=${this.appID}'">Continue</button>
                 </div>
                 `)
             }
@@ -129,6 +130,7 @@ class ServiceConnection {
     */
     async request(data) {
         data.sessionID = this.sessionID;
+        data.appID = this.appID;
 
         if (! (data.type === 'newSession')) {
             data.user = this.user;

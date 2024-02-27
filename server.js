@@ -126,7 +126,7 @@ app.get('/:appID/:pageID?', (req, res) => {
         
         <!-- HTML injected by Grey's Service Manager -->
 
-        <link rel="stylesheet" href="https://services.thecreatorgrey.site/${appID}/asset/stylesheet">
+        <link rel="stylesheet" type="text/css" href="https://services.thecreatorgrey.site/${appID}/asset/stylesheet">
         <script src="https://services.thecreatorgrey.site/frontend/GreysServiceManager.js"></script>
 
         <!-- ======================================= -->
@@ -149,7 +149,9 @@ app.get('/:appID/asset/stylesheet', (req, res) => {
         content = '404 not found'
     }
 
-    res.status(200).send(content);
+    res.setHeader('Content-Type', 'text/css');
+
+    res.send(content);
 });
 
 app.get('/:appID/asset/script/:scriptID', (req, res) => {

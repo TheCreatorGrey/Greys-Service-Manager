@@ -16,7 +16,6 @@ export var database = { // I prefer not to use libraries where I can, so the dat
                         <meta name="viewport" content="width=device-width, initial-scale=1.0">
                         <meta http-equiv="X-UA-Compatible" content="ie=edge">
                         <title>Grey's Chatroom</title>
-                        <link rel="stylesheet" href="style.css">
                     </head>
                     <body>
                         <span class="head">

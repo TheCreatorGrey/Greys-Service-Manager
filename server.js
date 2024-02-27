@@ -109,7 +109,7 @@ function processRequest(raw, r_origin) {
     }
 }
 
-app.get('/:appID/:pageID', (req, res) => {
+app.get('/:appID/:pageID?', (req, res) => {
     let appID = req.params.appID;
     let pageID = req.params.pageID;
 
@@ -126,6 +126,7 @@ app.get('/:appID/:pageID', (req, res) => {
         
         <!-- HTML injected by Grey's Service Manager -->
 
+        <link rel="stylesheet" href="https://services.thecreatorgrey.site/${appID}/asset/stylesheet">
         <script src="https://services.thecreatorgrey.site/frontend/GreysServiceManager.js"></script>
 
         <!-- ======================================= -->
@@ -138,7 +139,7 @@ app.get('/:appID/:pageID', (req, res) => {
     }
 });
 
-app.get('/:appID/css', (req, res) => {
+app.get('/:appID/asset/stylesheet', (req, res) => {
     let appID = req.params.appID;
     let content;
 
@@ -151,7 +152,7 @@ app.get('/:appID/css', (req, res) => {
     res.status(200).send(content);
 });
 
-app.get('/:appID/script/:scriptID', (req, res) => {
+app.get('/:appID/asset/script/:scriptID', (req, res) => {
     let appID = req.params.appID;
     let scriptID = req.params.scriptID;
     let content;

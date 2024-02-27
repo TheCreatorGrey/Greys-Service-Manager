@@ -28,7 +28,7 @@ function checkChars(string) { // Checks if a given string contains anything exce
 // user then returns or performs the action that was requested.
 function processRequest(raw, r_origin) {
     let OriginObj = r_origin;//new URL(r_origin);
-    let originPath = OriginObj.pathname.split('/');
+    let originPath = OriginObj.split('/');
 
     console.log(originPath, OriginObj.pathname);
 

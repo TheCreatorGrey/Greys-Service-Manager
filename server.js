@@ -7,7 +7,7 @@ import { authenticate, makeSession, checkChars } from './security.js'
 const app = express();
 app.use(express.static('public'));
 
-database.users.guest = { key: sha256('password'), roles: [], joinDate: getMDY(true), lastOnline: getMDY(true) }, // this is temporary lol
+database.users.guest = { key: sha256('password'), roles: [], joinDate: getMDY(true), lastOnline: getMDY(true) }; // this is temporary lol
 
 // This takes a request JSON and processes it. It authenticates the
 // user then returns or performs the action that was requested.

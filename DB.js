@@ -38,7 +38,7 @@ export var database = { // I prefer not to use libraries where I can, so the dat
                             <textarea name="mainScriptEntry" class="codeArea" id="mainScriptEntry"></textarea>
                 
                             <br>
-                            <button id="upd">update</button>
+                            <button id="updateBtn">update</button>
                         </div>
 
                         <script src="https://services.thecreatorgrey.site/dashboard/asset/script/index"></script>
@@ -64,7 +64,7 @@ export var database = { // I prefer not to use libraries where I can, so the dat
                     let apps = await connection.request({"type":"listApps"});
     
                     for (a of apps) {
-                        sb.insertAdjacentHTML("beforeend", "<button id='sidebarButton' onclick='switchApp(" + a + ")'>" + a + "</button>")
+                        sb.insertAdjacentHTML("beforeend", "<button id='sidebarButton' onclick='switchApp('" + a + "')'>" + a + "</button>")
                 }
                 })();
     

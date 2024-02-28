@@ -12,7 +12,8 @@
     <link rel="stylesheet" href="../style.css">
 </head>
 
-<body style="background-image: url(../untitled.png); background-size: cover; background-repeat: no-repeat; background-position: center;">
+<body
+    style="background-image: url(../untitled.png); background-size: cover; background-repeat: no-repeat; background-position: center;">
 
     <div id="GSMprompt">
         <span id="spanHeader"></span>
@@ -20,7 +21,7 @@
 
         <textarea placeholder="Username" name="Username Input" id="usernameInput"></textarea><br>
         <textarea placeholder="Password" name="Password Input" id="passwordInput"></textarea><br>
-    
+
         <button id="logbtn" class="largeButton"></button><br>
         <button id="crbtn"></button><br>
 
@@ -38,13 +39,13 @@
         let service = new ServiceConnection(null, true);
 
         // These prevent newlines in the login menu. I just duplicated them because I'm lazy
-        document.getElementById("usernameInput").addEventListener("keydown", function(e) {
+        document.getElementById("usernameInput").addEventListener("keydown", function (e) {
             if (e.keyCode === 13) {
                 e.preventDefault();
             }
         });
 
-        document.getElementById("passwordInput").addEventListener("keydown", function(e) {
+        document.getElementById("passwordInput").addEventListener("keydown", function (e) {
             if (e.keyCode === 13) {
                 e.preventDefault();
             }
@@ -61,16 +62,16 @@
                 if (e.tagName === 'TEXTAREA') {
 
                     e.style.lineHeight = `${e.clientHeight}px`;
-                    e.style.fontSize = `${e.clientHeight/2}px`;
+                    e.style.fontSize = `${e.clientHeight / 2}px`;
                     e.value.replace(/\n|\r/g, "");
 
                 } else if (e.tagName === 'BUTTON') {
 
-                    e.style.fontSize = `${prompt.clientHeight/20}px`
+                    e.style.fontSize = `${prompt.clientHeight / 20}px`
 
                 } else if (e.tagName === 'SPAN') {
 
-                    e.style.fontSize = `${prompt.clientHeight/10}px`
+                    e.style.fontSize = `${prompt.clientHeight / 10}px`
 
                 }
             }
@@ -78,7 +79,7 @@
 
 
         function switchMenu(mode) { // Switches menu between registration and login.
-            let loginBtn =  document.getElementById('logbtn');
+            let loginBtn = document.getElementById('logbtn');
             let createBtn = document.getElementById('crbtn');
             let spanHeader = document.getElementById('spanHeader');
             let errorMsg = document.getElementById('errorMsg');
@@ -90,15 +91,15 @@
 
             usInput.value = '';
             passInput.value = '';
-            
+
             if (mode === 'login') {
                 loginBtn.innerText = 'Log in';
                 createBtn.innerText = 'Sign up';
                 spanHeader.innerText = 'Log in';
 
-                createBtn.onclick = function() {switchMenu("signup")};
+                createBtn.onclick = function () { switchMenu("signup") };
 
-                loginBtn.onclick = async function() {
+                loginBtn.onclick = async function () {
                     let username = usInput.value;
 
                     errorMsg.innerText = '';
@@ -129,11 +130,11 @@
                 createBtn.innerText = 'Back';
                 spanHeader.innerText = 'Sign up';
 
-                createBtn.onclick = function() {switchMenu("login")};
+                createBtn.onclick = function () { switchMenu("login") };
 
-                loginBtn.onclick = async function() {
+                loginBtn.onclick = async function () {
                     errorMsg.innerText = '';
-                    
+
                     let register = await service.register(usInput.value, passInput.value);
 
                     if (register) {

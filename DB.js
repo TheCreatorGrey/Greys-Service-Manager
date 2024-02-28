@@ -1,14 +1,14 @@
-import {makePermCode, checkPermission} from './permissions.js';
+import { makePermCode, checkPermission } from './permissions.js';
 
 export var database = { // I prefer not to use libraries where I can, so the database is basically just stored in this JSON.
-    apps:{
-        'dashboard':{
-            data:{ childCategories: {}, items: {} },
+    apps: {
+        'dashboard': {
+            data: { childCategories: {}, items: {} },
 
-            sessions:{},
+            sessions: {},
 
-            pages:{
-                'main':`
+            pages: {
+                'main': `
                 <!DOCTYPE html>
                     <html lang="en">
                     <head>
@@ -26,8 +26,8 @@ export var database = { // I prefer not to use libraries where I can, so the dat
                 `
             },
 
-            scripts:{
-                'index':`
+            scripts: {
+                'index': `
                 console.log("amogus");
 
                 let sc = new ServiceConnection("dashboard");
@@ -39,22 +39,22 @@ export var database = { // I prefer not to use libraries where I can, so the dat
                 `
             },
 
-            stylesheet:`
+            stylesheet: `
                 body {
                     background-color: rgb(32, 32, 32);
                 }
             `,
 
-            owner:'thecreatorgrey'
+            owner: 'thecreatorgrey'
         },
 
-        'amogus':{
-            data:{ childCategories: {}, items: {} },
+        'amogus': {
+            data: { childCategories: {}, items: {} },
 
-            sessions:{},
+            sessions: {},
 
-            pages:{
-                'main':`
+            pages: {
+                'main': `
                 <!DOCTYPE html>
                     <html lang="en">
                     <head>
@@ -69,19 +69,19 @@ export var database = { // I prefer not to use libraries where I can, so the dat
                 `
             },
 
-            scripts:{
-                'index':`
+            scripts: {
+                'index': `
                 console.log("amogus");
                 `
             },
 
-            stylesheet:`
+            stylesheet: `
                 body {
                     background-color: rgb(32, 32, 32);
                 }
             `,
 
-            owner:'thecreatorgrey'
+            owner: 'thecreatorgrey'
         }
     },
 
@@ -118,7 +118,7 @@ export function getUserInfo(user) { // Self-explanitory.
 
 
 
-export function getItemFromPath(obj, path, user, processes = [], intent = 'read', valOnly=true) { // The intent argument tells the function which permission to check for when determining whether the user has access or not. The only case in which write is used instead of read is in the set function.
+export function getItemFromPath(obj, path, user, processes = [], intent = 'read', valOnly = true) { // The intent argument tells the function which permission to check for when determining whether the user has access or not. The only case in which write is used instead of read is in the set function.
     let pathList = path.split("/");
     let current = obj;
     console.log(JSON.stringify(obj))
@@ -186,12 +186,12 @@ export function setItemFromPath(obj, path, mode, value, user, permissions) { // 
                 current.childCategories[catName] = { items: {}, childCategories: {} };
             }
 
-            console.log(catName, pathList[pathList.length-1]);
-            if (catName === pathList[pathList.length-1]) {
+            console.log(catName, pathList[pathList.length - 1]);
+            if (catName === pathList[pathList.length - 1]) {
                 let item = current.childCategories[catName].items[pathList[pathList.length - 1]];
 
                 if (mode === 'set') {
-                    item = { value: value, owner: user, p:makePermCode(permissions), cd: getMDY(true), lm: getMDY(true), id:current.childCategories[catName].items.length  }
+                    item = { value: value, owner: user, p: makePermCode(permissions), cd: getMDY(true), lm: getMDY(true), id: current.childCategories[catName].items.length }
                 } else if (mode === 'append') {
                     item.value.push(value);
                     item.lm = getMDY();
@@ -231,7 +231,7 @@ export function listChildren(obj, path, user) { // This takes a database directo
         }
     }
 
-    return {categories:Object.keys(current.childCategories), items:accessibleItems}
+    return { categories: Object.keys(current.childCategories), items: accessibleItems }
 }
 
 

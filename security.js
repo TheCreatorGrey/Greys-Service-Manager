@@ -1,7 +1,7 @@
 import { database } from "./DB.js";
-import sha256 from 'crypto-js/sha256.js';
+import { sha256 } from 'js-sha256';
 
-export function generateID(length=16) {
+export function generateID(length = 16) {
     let id = '';
     let takenIds = Object.values(database.apps[app].sessions);
     let chars = [...'qwertyuiopasdfghjklzxcvbnm1234567890QWERTYUIOPASDFGHJKLZXCVBNM'];
@@ -39,7 +39,7 @@ export function makeSession(user, pass, app) { // Takes login information and re
             if ((database.users[user].key === sha256(pass))) {
 
                 database.apps[app].sessions[user] = generateID();
-    
+
                 console.log(`Successful session creation attempt for @${user}`);
                 return id
             }
@@ -61,9 +61,9 @@ export function checkChars(string) { // Checks if a given string contains anythi
     let passes = true;
 
     for (let i of string) {
-      if (!allowed.includes(i.toLowerCase())) {
-        passes = false
-      }
+        if (!allowed.includes(i.toLowerCase())) {
+            passes = false
+        }
     }
 
     return passes;

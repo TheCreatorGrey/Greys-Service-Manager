@@ -1,5 +1,5 @@
 import express from 'express';
-import sha256 from 'crypto-js/sha256.js';
+import { sha256 } from 'js-sha256';
 //import cryptoJs from 'crypto-js';
 import { database, getMDY, updateApp } from './DB.js';
 import { authenticate, makeSession, checkChars } from './security.js'
@@ -35,7 +35,7 @@ function processRequest(raw, r_origin) {
     }
 
     console.log(originPath)
-    
+
     if (originPath[1] === 'login') { // Makes it so that sessions and accounts can only be made from the official login page.
         if (r.type === 'newSession') {
             return makeSession(r.user, r.pass, r.sessionTarget)
@@ -72,19 +72,19 @@ function processRequest(raw, r_origin) {
     if (r.sessionID) { // Everything under this statement can only be performed by authenticated users. Mostly database operations.
         if (authenticate(r.user, r.sessionID, appID)) {
             database.users[r.user].lastOnline = getMDY(true);
-    
+
             if (r.type === 'get') {
                 return getItemFromPath(database.apps[appID].data, r.path, r.user, r.prs, r.valOnly)
             }
-    
+
             if (r.type === 'set') {
                 return setItemFromPath(database.apps[appID].data, r.path, r.mode, r.value, r.user, r.perms)
             }
-    
+
             if (r.type === 'listCh') {
                 return listChildren(database.apps[appID].data, r.path)
             }
-    
+
             if (r.type === 'batchOp') {
                 return batchOperation(r.ops)
             }
@@ -172,7 +172,7 @@ app.post('/api', (req, res) => { // This eyesore chunk of code manages the reque
     });
 
     req.on('end', () => {
-        res.status(200).send({ res: processRequest(body, req.get('referer'))});
+        res.status(200).send({ res: processRequest(body, req.get('referer')) });
     });
 });
 

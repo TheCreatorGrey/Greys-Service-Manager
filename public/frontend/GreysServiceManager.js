@@ -2,7 +2,7 @@
 * An object through which you can communicate to the server.
 */
 class ServiceConnection {
-    constructor(appID, guest=false) {
+    constructor(appID, guest = false) {
         this.params = new URLSearchParams(window.location.search);
 
         this.apiUrl = 'https://services.thecreatorgrey.site/api';
@@ -14,7 +14,7 @@ class ServiceConnection {
             this.sessionID = this.params.get('sessID');
             this.user = this.params.get('user');
 
-            if ((! this.sessionID) || (! this.user)) {
+            if ((!this.sessionID) || (!this.user)) {
                 console.info('Session ID and/or username were not found. Prompting login...');
 
                 document.body.insertAdjacentHTML('beforebegin', `
@@ -40,49 +40,49 @@ class ServiceConnection {
     */
     interperetErrCode(code) {
         let errCodes = {
-            'BADAUTH':{
-                type:'error',
-                meaning:'Authentication failed.'
+            'BADAUTH': {
+                type: 'error',
+                meaning: 'Authentication failed.'
             },
 
-            'NOITEM':{
-                type:'error',
-                meaning:'Item or path could not be found.'
+            'NOITEM': {
+                type: 'error',
+                meaning: 'Item or path could not be found.'
             },
 
-            'NOACCESS':{
-                type:'error',
-                meaning:'You do not have access to the item you requested.'
+            'NOACCESS': {
+                type: 'error',
+                meaning: 'You do not have access to the item you requested.'
             },
 
-            'INVALIDMODE':{
-                type:'error',
-                meaning:'The modification mode you supplied is invalid.'
+            'INVALIDMODE': {
+                type: 'error',
+                meaning: 'The modification mode you supplied is invalid.'
             },
 
-            'FAILEDPRS':{
-                type:'error',
-                meaning:'The processes you supplied failed. Please make sure you supplied valid process IDs and the value of the item you requested is compatible with your operation.'
+            'FAILEDPRS': {
+                type: 'error',
+                meaning: 'The processes you supplied failed. Please make sure you supplied valid process IDs and the value of the item you requested is compatible with your operation.'
             },
 
-            'NOSESSION':{
-                type:'error',
-                meaning:'Your session ID is missing.'
+            'NOSESSION': {
+                type: 'error',
+                meaning: 'Your session ID is missing.'
             },
 
-            'NO_REGISTRATION_PERMISSION':{
-                type:'error',
-                meaning:'Client sites do not have permission make registrations or sessions.'
+            'NO_REGISTRATION_PERMISSION': {
+                type: 'error',
+                meaning: 'Client sites do not have permission make registrations or sessions.'
             },
 
-            'NO_APP':{
-                type:'error',
-                meaning:'Your app ID is not registered or does not exist.'
+            'NO_APP': {
+                type: 'error',
+                meaning: 'Your app ID is not registered or does not exist.'
             },
 
-            'BAD_ORIGIN':{
-                type:'error',
-                meaning:'This API can only be used by apps under services.thecreatorgrey.site'
+            'BAD_ORIGIN': {
+                type: 'error',
+                meaning: 'This API can only be used by apps under services.thecreatorgrey.site'
             }
         }
 
@@ -99,7 +99,7 @@ class ServiceConnection {
     * Requests and returns a session ID which can be used later. Can only be performed from the official Grey's Service Manager website.
     */
     async requestSession(username, password, app) {
-        let newSess = await this.request({ type: 'newSession', user: username, pass: password, sessionTarget: app});
+        let newSess = await this.request({ type: 'newSession', user: username, pass: password, sessionTarget: app });
 
         if (newSess === 'BADAUTH') {
             console.error('Session creation failed. Please make sure login is correct.');
@@ -118,7 +118,7 @@ class ServiceConnection {
     async register(newUser, newPass) {
         return await this.request({
             type: 'register',
-            username: newUser, 
+            username: newUser,
             key: newPass
         });
     }
@@ -132,7 +132,7 @@ class ServiceConnection {
         data.sessionID = this.sessionID;
         data.appID = this.appID;
 
-        if (! (data.type === 'newSession')) {
+        if (!(data.type === 'newSession')) {
             data.user = this.user;
         }
 
@@ -161,12 +161,12 @@ class ServiceConnection {
     /**
     * Gets an item from the database.
     */
-    async getItem(path, processes=[], valOnly=true) {
+    async getItem(path, processes = [], valOnly = true) {
         let res = await this.request({
             type: 'get',
-            prs:processes,
+            prs: processes,
             path: path,
-            valOnly:valOnly
+            valOnly: valOnly
         });
 
         return res
@@ -175,7 +175,7 @@ class ServiceConnection {
     /**
     * Modifies or sets an item from the database.
     */
-    async setItem(path, value, mode='set', permissions={}) {
+    async setItem(path, value, mode = 'set', permissions = {}) {
         let res = await this.request({
             type: 'set',
             mode: mode,

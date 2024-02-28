@@ -259,6 +259,8 @@ export function batchOperation(ops, obj, user) { // Performs multiple operations
 export function updateApp(id, object, user) {
     let app = database.apps[id];
 
+    console.log(id, app, database.apps)
+
     if (app.owner === user) {
         if (object.pages) {
             app.pages = object.pages

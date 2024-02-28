@@ -58,7 +58,7 @@ export function checkChars(string) { // Checks if a given string contains anythi
 
     let passes = true;
 
-    for (i of string) {
+    for (let i of string) {
       if (!allowed.includes(i.toLowerCase())) {
         passes = false
       }

@@ -20,7 +20,7 @@ export var database = { // I prefer not to use libraries where I can, so the dat
                         <textarea name="input" id="entry"></textarea>
                         <button id="upd">update</button>
 
-                        <script src="https://services.thecreatorgrey.site/greyschat/asset/script/index"></script>
+                        <script src="https://services.thecreatorgrey.site/dashboard/asset/script/index"></script>
                     </body>
                 </html>
                 `
@@ -34,8 +34,44 @@ export var database = { // I prefer not to use libraries where I can, so the dat
                 
                 document.getElementById("upd").onclick = async function() {
                     let val = document.getElementById("entry").value;
-                    await sc.request({"type":"updateApp", "obj":{pages:{main:val}}})
+                    await sc.request({"type":"updateApp", "obj":{pages:{main:val}, "id":"amogus"}})
                 }
+                `
+            },
+
+            stylesheet:`
+                body {
+                    background-color: rgb(32, 32, 32);
+                }
+            `,
+
+            owner:'thecreatorgrey'
+        },
+
+        'amogus':{
+            data:{ childCategories: {}, items: {} },
+
+            sessions:{},
+
+            pages:{
+                'main':`
+                <!DOCTYPE html>
+                    <html lang="en">
+                    <head>
+                        <meta charset="UTF-8">
+                        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                        <title>Amogus</title>
+                    </head>
+                    <body>
+                        <script src="https://services.thecreatorgrey.site/amogus/asset/script/index"></script>
+                    </body>
+                </html>
+                `
+            },
+
+            scripts:{
+                'index':`
+                console.log("amogus");
                 `
             },
 

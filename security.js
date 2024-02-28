@@ -1,9 +1,8 @@
 import { database } from "./DB.js";
 import { sha256 } from 'js-sha256';
 
-export function generateID(length = 16) {
+export function generateID(takenIds, length = 16) {
     let id = '';
-    let takenIds = Object.values(database.apps[app].sessions);
     let chars = [...'qwertyuiopasdfghjklzxcvbnm1234567890QWERTYUIOPASDFGHJKLZXCVBNM'];
 
     while ((takenIds.includes(id)) || (id === '')) { //On the very low chance that it generates an ID that already exists, it will generate another one
@@ -38,7 +37,7 @@ export function makeSession(user, pass, app) { // Takes login information and re
         if (user in database.users) {
             if ((database.users[user].key === sha256(pass))) {
 
-                database.apps[app].sessions[user] = generateID();
+                database.apps[app].sessions[user] = generateID(Object.values(database.apps[app].sessions));
 
                 console.log(`Successful session creation attempt for @${user}`);
                 return id

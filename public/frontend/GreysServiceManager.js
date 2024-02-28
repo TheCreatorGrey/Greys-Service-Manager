@@ -70,9 +70,9 @@ class ServiceConnection {
                 meaning: 'Your session ID is missing.'
             },
 
-            'NO_REGISTRATION_PERMISSION': {
+            'BAD_PATH': {
                 type: 'error',
-                meaning: 'Client sites do not have permission make registrations or sessions.'
+                meaning: 'This operation can not be performed here.'
             },
 
             'NO_APP': {

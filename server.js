@@ -9,6 +9,141 @@ app.use(express.static('public'));
 
 database.users.guest = { key: sha256('password'), roles: [], joinDate: getMDY(true), lastOnline: getMDY(true) }; // this is temporary lol
 
+
+let operations = {
+    "getUserInfo":{
+        func: function(r) {
+            return getUserInfo(r.name)
+        },
+
+        security: null,
+        restricted: null
+    },
+
+    "newSession":{
+        func: function(r) {
+            return makeSession(r.user, r.pass, r.sessionTarget)
+        },
+
+        security: null,
+        restricted: 'login'
+    },
+
+    "register":{
+        func: function(r) {
+            if (database.users[r.username]) {
+                return 'USERTAKEN'
+            } else {
+                if (r.username.length < 15) {
+                    if (r.username.length > 2) {
+                        if (checkChars(r.username)) {
+                            if (r.key.length > 9) {
+                                database.users[r.username] = { key: sha256(r.key), roles: [], joinDate: getMDY(true), lastOnline: getMDY(true) };
+                                return true
+                            } else {
+                                return 'SHORTKEY'
+                            }
+                        } else {
+                            return 'BADCHARS'
+                        }
+                    } else {
+                        return 'TOOFEWCHARS'
+                    }
+                } else {
+                    return 'TOOMANYCHARS'
+                }
+            }
+        },
+
+        security: null,
+        restricted: 'login'
+    },
+
+    "register":{
+        func: function(r) {
+            if (database.users[r.username]) {
+                return 'USERTAKEN'
+            } else {
+                if (r.username.length < 15) {
+                    if (r.username.length > 2) {
+                        if (checkChars(r.username)) {
+                            if (r.key.length > 9) {
+                                database.users[r.username] = { key: sha256(r.key), roles: [], joinDate: getMDY(true), lastOnline: getMDY(true) };
+                                return true
+                            } else {
+                                return 'SHORTKEY'
+                            }
+                        } else {
+                            return 'BADCHARS'
+                        }
+                    } else {
+                        return 'TOOFEWCHARS'
+                    }
+                } else {
+                    return 'TOOMANYCHARS'
+                }
+            }
+        },
+
+        security: null,
+        restricted: 'login'
+    },
+
+    "get":{
+        func: function(r) {
+            return getItemFromPath(database.apps[r.appID].data, r.path, r.user, r.prs, r.valOnly)
+        },
+
+        security: 'authenticated',
+        restricted: null
+    },
+
+    "set":{
+        func: function(r) {
+            return setItemFromPath(database.apps[r.appID].data, r.path, r.mode, r.value, r.user, r.perms)
+        },
+
+        security: 'authenticated',
+        restricted: null
+    },
+
+    "listCh":{
+        func: function(r) {
+            return listChildren(database.apps[r.appID].data, r.path)
+        },
+
+        security: 'authenticated',
+        restricted: null
+    },
+
+    "listCh":{
+        func: function(r) {
+            return listChildren(database.apps[r.appID].data, r.path)
+        },
+
+        security: 'authenticated',
+        restricted: null
+    },
+
+    "batchOp":{
+        func: function(r) {
+            return batchOperation(r.ops)
+        },
+
+        security: 'authenticated',
+        restricted: null
+    },
+
+    "updateApp":{
+        func: function(r) {
+            return updateApp(r.id, r.obj, r.user);
+        },
+
+        security: 'authenticated',
+        restricted: null
+    },
+}
+
 // This takes a request JSON and processes it. It authenticates the
 // user then returns or performs the action that was requested.
 function processRequest(raw, r_origin) {
@@ -19,10 +154,7 @@ function processRequest(raw, r_origin) {
 
     let r = JSON.parse(raw);
 
-    let clientRes;
-
     let appID = r.appID;
-    //if ()
 
     //if (!(r_origin in database.apps)) {
     //    database.apps[r_origin] = { data: { childCategories: {}, items: {} }, sessions: {} };
@@ -33,75 +165,42 @@ function processRequest(raw, r_origin) {
     // These individual if statements determine what the request 'wants' based on it's 'type' property.
 
     if (r.type === 'getUserInfo') {
-        clientRes = getUserInfo(r.name)
+        return getUserInfo(r.name)
     }
 
     console.log(originPath)
 
-    if (originPath[1] === 'login') { // Makes it so that sessions and accounts can only be made from the official login page.
-        if (r.type === 'newSession') {
-            clientRes = makeSession(r.user, r.pass, r.sessionTarget)
-        }
 
-        if (r.type === 'register') {
-            if (database.users[r.username]) {
-                clientRes = 'USERTAKEN'
-            } else {
-                if (r.username.length < 15) {
-                    if (r.username.length > 2) {
-                        if (checkChars(r.username)) {
-                            if (r.key.length > 9) {
-                                database.users[r.username] = { key: sha256(r.key), roles: [], joinDate: getMDY(true), lastOnline: getMDY(true) };
-                                clientRes = true
-                            } else {
-                                clientRes = 'SHORTKEY'
-                            }
-                        } else {
-                            clientRes = 'BADCHARS'
-                        }
-                    } else {
-                        clientRes = 'TOOFEWCHARS'
-                    }
-                } else {
-                    clientRes = 'TOOMANYCHARS'
-                }
-            }
+    let operation = operations[r.type];
+    let authorized = true; // this variable determines whether the request is fulfilled or not. The below code makes checks and changes the variable accordlingly.
+    let response = null;
+
+    if (operation.restricted) {
+        if (originPath[1] !== operation.restricted) {
+            authorized = false
+            response = 'BAD_PATH'
         }
-    } else {
-        clientRes = 'NO_REGISTRATION_PERMISSION'
     }
 
-    if (r.sessionID) { // Everything under this statement can only be performed by authenticated users. Mostly database operations.
-        if (authenticate(r.user, r.sessionID, appID)) {
-            database.users[r.user].lastOnline = getMDY(true);
+    if (operation.security === 'authenticated') {
+        if (!r.sessionID) { // Everything under this statement can only be performed by authenticated users. Mostly database operations.
+            authorized = false
+            response = 'NOSESSION'
+        }
 
-            if (r.type === 'get') {
-                clientRes = getItemFromPath(database.apps[appID].data, r.path, r.user, r.prs, r.valOnly)
-            }
-
-            if (r.type === 'set') {
-                clientRes = setItemFromPath(database.apps[appID].data, r.path, r.mode, r.value, r.user, r.perms)
-            }
-
-            if (r.type === 'listCh') {
-                clientRes = listChildren(database.apps[appID].data, r.path)
-            }
-
-            if (r.type === 'batchOp') {
-                clientRes = batchOperation(r.ops)
-            }
-
-            if (r.type === 'updateApp') {
-                clientRes = updateApp(r.id, r.obj, r.user);
-            }
+        if (!authenticate(r.user, r.sessionID, appID)) {
+            authorized = false
+            response = 'BADAUTH'
         } else {
-            clientRes = 'BADAUTH'
+            database.users[r.user].lastOnline = getMDY(true);
         }
-    } else {
-        clientRes = 'NOSESSION'
     }
 
-    return clientRes
+    if (authorized) {
+        response = operation.func(r);
+    }
+
+    return response;
 }
 
 app.get('/:appID/:pageID?', (req, res) => {

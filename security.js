@@ -43,6 +43,8 @@ export function makeSession(user, pass, app) { // Takes login information and re
                 console.log(`Successful session creation attempt for @${user}`);
                 return id
             }
+
+            console.log(database.users[user].key, sha256(pass), app, user)
         }
     } else {
         return 'NO_APP'

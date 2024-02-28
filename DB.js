@@ -2,7 +2,7 @@ import {makePermCode, checkPermission} from './permissions.js';
 
 export var database = { // I prefer not to use libraries where I can, so the database is basically just stored in this JSON.
     apps:{
-        'greyschat':{
+        'dashboard':{
             data:{ childCategories: {}, items: {} },
 
             sessions:{},
@@ -17,24 +17,11 @@ export var database = { // I prefer not to use libraries where I can, so the dat
                         <title>Grey's Chatroom</title>
                     </head>
                     <body>
-                        <span class="head">
-                        <img src="./assets/icon.png" alt="icon" style="height: 50px;">
-                        <h1 class="head-text">Grey's Chatroom</h1>
-                        <h1 class="head-text" style="font-family: sans-serif; font-size: 20px; color: darkgray;">With PeerJS</h1>
-                        </span>
-                    
-                        <div class="msgBoard">
-                            <div id="msgContainer">
-                            </div>
-                    
-                            <span style="width: 100%;">
-                                <textarea name="input" id="msgEntry"></textarea>
-                                <button id="sendBtn">Send</button>
-                            </span>
-                        </div>
-                    <script src="https://unpkg.com/peerjs@1.5.1/dist/peerjs.min.js"></script>
-                    <script src="https://services.thecreatorgrey.site/greyschat/asset/script/index"></script>
-                  </body>
+                        <textarea name="input" id="entry"></textarea>
+                        <button id="upd">update</button>
+
+                        <script src="https://services.thecreatorgrey.site/greyschat/asset/script/index"></script>
+                    </body>
                 </html>
                 `
             },
@@ -43,78 +30,18 @@ export var database = { // I prefer not to use libraries where I can, so the dat
                 'index':`
                 console.log("amogus");
 
-                let sc = new ServiceConnection("greyschat");
-                sc.setItem('main/chatval', 'hello');
+                let sc = new ServiceConnection("dashboard");
+                
+                document.getElementById("upd").onclick = async function() {
+                    let val = document.getElementById("entry").value;
+                    await sc.request({"type":"updateApp", "obj":{pages:{main:val}}})
+                }
                 `
             },
 
             stylesheet:`
-                @font-face {
-                    font-family: 'Header';
-                    src: url('./assets/PixelifySans-Regular.ttf');
-                }
-                
-                @font-face {
-                    font-family: 'Montserrat';
-                    src: url('./assets/Montserrat-Medium.ttf');
-                }
-                
                 body {
                     background-color: rgb(32, 32, 32);
-                }
-                
-                .msgBoard {
-                    width: 100%;;
-                    height: calc(100% - 60px);
-                    position: absolute;
-                    bottom: 0;
-                    left: 0;
-                }
-                
-                .head {
-                    position: absolute; 
-                }
-                
-                .head-text {
-                    font-size: 50px; 
-                    line-height:50px; 
-                    vertical-align: top; 
-                    display: inline; 
-                    color: white; 
-                    font-family: Header;
-                }
-                
-                #msgContainer {
-                    background-color: rgb(20, 20, 20);
-                    width:100%;
-                    height: calc(100% - 60px);
-                    overflow-y: auto;
-                    color: white;
-                    font-size: .5cm;
-                    font-family: Montserrat;
-                }
-                
-                #msgEntry {
-                    width: calc(100% - 65px);
-                    height: 55px;
-                    border: 0;
-                    padding: 0;
-                    margin: 0;
-                    resize: none;
-                    background-color: rgb(40, 40, 40);
-                    color: white;
-                    font-family: Montserrat;
-                    font-size: .5cm;
-                }
-                
-                #sendBtn {
-                    border:0;
-                    width: 60px;
-                    height: 55px;
-                    vertical-align: top;
-                    background-color: rgb(40, 100, 40);
-                    color: white;
-                    font-family: Montserrat;
                 }
             `,
 
@@ -288,5 +215,27 @@ export function batchOperation(ops, obj, user) { // Performs multiple operations
         return responses
     } else {
         return 'OPLIMIT'
+    }
+}
+
+
+
+export function updateApp(id, object, user) {
+    let app = database.apps[id];
+
+    if (app.owner === user) {
+        if (object.pages) {
+            app.pages = object.pages
+        }
+
+        if (object.stylesheet) {
+            app.stylesheet = object.stylesheet
+        }
+
+        if (object.scripts) {
+            app.scripts = object.scripts
+        }
+    } else {
+        return "BADAUTH"
     }
 }

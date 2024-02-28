@@ -51,3 +51,18 @@ export function makeSession(user, pass, app) { // Takes login information and re
     console.log(`Failed session creation attempt for @${user}`);
     return 'BADAUTH'
 }
+
+
+export function checkChars(string) { // Checks if a given string contains anything except for letters and numbers.
+    let allowed = [...'qwertyuiopasdfghjklzxcvbnm1234567890_-'];
+
+    let passes = true;
+
+    for (i of string) {
+      if (!allowed.includes(i.toLowerCase())) {
+        passes = false
+      }
+    }
+
+    return passes;
+}

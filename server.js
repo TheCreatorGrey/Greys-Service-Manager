@@ -1,28 +1,13 @@
 import express from 'express';
 import sha256 from 'crypto-js/sha256.js';
 //import cryptoJs from 'crypto-js';
-import { database, getMDY } from './DB.js';
-import { authenticate, makeSession } from './security.js'
+import { database, getMDY, updateApp } from './DB.js';
+import { authenticate, makeSession, checkChars } from './security.js'
 
 const app = express();
 app.use(express.static('public'));
 
 database.users.guest = { key: sha256('password'), roles: [], joinDate: getMDY(true), lastOnline: getMDY(true) }, // this is temporary lol
-
-function checkChars(string) { // Checks if a given string contains anything except for letters and numbers.
-    let allowed = [...'qwertyuiopasdfghjklzxcvbnm1234567890_-'];
-
-    let passes = true;
-
-    for (i of string) {
-      if (!allowed.includes(i.toLowerCase())) {
-        passes = false
-      }
-    }
-
-    return passes;
-}
-
 
 // This takes a request JSON and processes it. It authenticates the
 // user then returns or performs the action that was requested.
@@ -102,6 +87,10 @@ function processRequest(raw, r_origin) {
     
             if (r.type === 'batchOp') {
                 return batchOperation(r.ops)
+            }
+
+            if (r.type === 'updateApp') {
+                return updateApp(r.id, r.obj, r.user);
             }
         } else {
             return 'BADAUTH'

@@ -34,6 +34,14 @@ function processRequest(raw, r_origin) {
         return getUserInfo(r.name)
     }
 
+    if (r.type === 'listApps') {
+        return Object.keys(database.apps)
+    }
+
+    if (r.type === 'listPages') {
+        return Object.keys(database.apps[r.id].pages)
+    }
+
     console.log(originPath)
 
     let fallbackErrCode;

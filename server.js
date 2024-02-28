@@ -19,6 +19,8 @@ function processRequest(raw, r_origin) {
 
     let r = JSON.parse(raw);
 
+    let clientRes;
+
     let appID = r.appID;
     //if ()
 
@@ -31,42 +33,42 @@ function processRequest(raw, r_origin) {
     // These individual if statements determine what the request 'wants' based on it's 'type' property.
 
     if (r.type === 'getUserInfo') {
-        return getUserInfo(r.name)
+        clientRes = getUserInfo(r.name)
     }
 
     console.log(originPath)
 
     if (originPath[1] === 'login') { // Makes it so that sessions and accounts can only be made from the official login page.
         if (r.type === 'newSession') {
-            return makeSession(r.user, r.pass, r.sessionTarget)
+            clientRes = makeSession(r.user, r.pass, r.sessionTarget)
         }
 
         if (r.type === 'register') {
             if (database.users[r.username]) {
-                return 'USERTAKEN'
+                clientRes = 'USERTAKEN'
             } else {
                 if (r.username.length < 15) {
                     if (r.username.length > 2) {
                         if (checkChars(r.username)) {
                             if (r.key.length > 9) {
                                 database.users[r.username] = { key: sha256(r.key), roles: [], joinDate: getMDY(true), lastOnline: getMDY(true) };
-                                return true
+                                clientRes = true
                             } else {
-                                return 'SHORTKEY'
+                                clientRes = 'SHORTKEY'
                             }
                         } else {
-                            return 'BADCHARS'
+                            clientRes = 'BADCHARS'
                         }
                     } else {
-                        return 'TOOFEWCHARS'
+                        clientRes = 'TOOFEWCHARS'
                     }
                 } else {
-                    return 'TOOMANYCHARS'
+                    clientRes = 'TOOMANYCHARS'
                 }
             }
         }
     } else {
-        return 'NO_REGISTRATION_PERMISSION'
+        clientRes = 'NO_REGISTRATION_PERMISSION'
     }
 
     if (r.sessionID) { // Everything under this statement can only be performed by authenticated users. Mostly database operations.
@@ -74,30 +76,32 @@ function processRequest(raw, r_origin) {
             database.users[r.user].lastOnline = getMDY(true);
 
             if (r.type === 'get') {
-                return getItemFromPath(database.apps[appID].data, r.path, r.user, r.prs, r.valOnly)
+                clientRes = getItemFromPath(database.apps[appID].data, r.path, r.user, r.prs, r.valOnly)
             }
 
             if (r.type === 'set') {
-                return setItemFromPath(database.apps[appID].data, r.path, r.mode, r.value, r.user, r.perms)
+                clientRes = setItemFromPath(database.apps[appID].data, r.path, r.mode, r.value, r.user, r.perms)
             }
 
             if (r.type === 'listCh') {
-                return listChildren(database.apps[appID].data, r.path)
+                clientRes = listChildren(database.apps[appID].data, r.path)
             }
 
             if (r.type === 'batchOp') {
-                return batchOperation(r.ops)
+                clientRes = batchOperation(r.ops)
             }
 
             if (r.type === 'updateApp') {
-                return updateApp(r.id, r.obj, r.user);
+                clientRes = updateApp(r.id, r.obj, r.user);
             }
         } else {
-            return 'BADAUTH'
+            clientRes = 'BADAUTH'
         }
     } else {
-        return 'NOSESSION'
+        clientRes = 'NOSESSION'
     }
+
+    return clientRes
 }
 
 app.get('/:appID/:pageID?', (req, res) => {

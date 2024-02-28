@@ -36,8 +36,9 @@ export function makeSession(user, pass, app) { // Takes login information and re
     if (app in database.apps) {
         if (user in database.users) {
             if ((database.users[user].key === sha256(pass))) {
+                let id = generateID(Object.values(database.apps[app].sessions));
 
-                database.apps[app].sessions[user] = generateID(Object.values(database.apps[app].sessions));
+                database.apps[app].sessions[user] = id;
 
                 console.log(`Successful session creation attempt for @${user}`);
                 return id

@@ -40,6 +40,8 @@ export var database = { // I prefer not to use libraries where I can, so the dat
                             <br>
                             <button id="upd">update</button>
                         </div>
+
+                        <script src="https://services.thecreatorgrey.site/dashboard/asset/script/index"></script>
                     </body>
                 </html>
                 `

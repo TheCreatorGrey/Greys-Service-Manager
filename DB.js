@@ -34,7 +34,7 @@ export var database = { // I prefer not to use libraries where I can, so the dat
                 
                 document.getElementById("upd").onclick = async function() {
                     let val = document.getElementById("entry").value;
-                    await sc.request({"type":"updateApp", "obj":{pages:{main:val}, "id":"amogus"}})
+                    await sc.request({"type":"updateApp", "obj":{pages:{main:val}}, "id":"amogus"})
                 }
                 `
             },

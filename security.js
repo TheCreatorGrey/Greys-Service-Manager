@@ -1,4 +1,5 @@
 import { database } from "./DB.js";
+import sha256 from 'crypto-js/sha256.js';
 
 export function generateID(ids, length=16) {
     let id = '';

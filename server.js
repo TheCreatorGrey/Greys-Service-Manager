@@ -101,7 +101,7 @@ function processRequest(raw, r_origin) {
         fallbackErrCode = 'NOSESSION'
     }
 
-    return fallbackErrCode;
+    return fallbackErrCode; 
 }
 
 app.get('/:appID/:pageID?', (req, res) => {

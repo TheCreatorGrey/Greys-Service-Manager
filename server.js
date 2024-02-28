@@ -70,19 +70,19 @@ function processRequest(raw, r_origin) {
     }
 
     if (r.sessionID) { // Everything under this statement can only be performed by authenticated users. Mostly database operations.
-        if (authenticate(r.user, r.sessionID, r_origin)) {
+        if (authenticate(r.user, r.sessionID, appID)) {
             database.users[r.user].lastOnline = getMDY(true);
     
             if (r.type === 'get') {
-                return getItemFromPath(database.apps[r_origin].data, r.path, r.user, r.prs, r.valOnly)
+                return getItemFromPath(database.apps[appID].data, r.path, r.user, r.prs, r.valOnly)
             }
     
             if (r.type === 'set') {
-                return setItemFromPath(database.apps[r_origin].data, r.path, r.mode, r.value, r.user, r.perms)
+                return setItemFromPath(database.apps[appID].data, r.path, r.mode, r.value, r.user, r.perms)
             }
     
             if (r.type === 'listCh') {
-                return listChildren(database.apps[r_origin].data, r.path)
+                return listChildren(database.apps[appID].data, r.path)
             }
     
             if (r.type === 'batchOp') {

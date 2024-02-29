@@ -64,7 +64,7 @@ export var database = { // I prefer not to use libraries where I can, so the dat
                     let apps = await connection.request({"type":"listApps"});
     
                     for (a of apps) {
-                        sb.insertAdjacentHTML("beforeend", "<button id='sidebarButton' onclick='switchApp('" + a + "')'>" + a + "</button>")
+                        sb.insertAdjacentHTML("beforeend", "<button id='sidebarButton' onclick='" + "switchApp(" + a + ")'>" + a + "</button>")
                 }
                 })();
     
@@ -74,7 +74,7 @@ export var database = { // I prefer not to use libraries where I can, so the dat
                     let styleSheet = document.getElementById("styleSheetEntry").value;
                     let mainScript = document.getElementById("mainScriptEntry").value;
     
-                    await sc.request({"type":"updateApp", "obj":{pages:{main:htmlVal}, stylesheet:styleSheet, scripts:{index:mainScript}}, "id":currentApp})
+                    await connection.request({"type":"updateApp", "obj":{pages:{main:htmlVal}, stylesheet:styleSheet, scripts:{index:mainScript}}, "id":currentApp})
                 }
                 `
             },

@@ -1,7 +1,7 @@
 import express from 'express';
 import { sha256 } from 'js-sha256';
 //import cryptoJs from 'crypto-js';
-import { database, getMDY, updateApp } from './DB.js';
+import { database, getMDY, updateApp, setItemFromPath, getItemFromPath } from './DB.js';
 import { authenticate, makeSession, checkChars } from './security.js'
 
 const app = express();

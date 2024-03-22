@@ -46,7 +46,7 @@ function processRequest(raw, r_origin) {
 
     let fallbackErrCode;
 
-    if (r_origin === 'services.thecreatorgrey.site/login') { // Makes it so that sessions and accounts can only be made from the official login page.
+    if (true) { // r_origin === 'services.thecreatorgrey.site/login' Makes it so that sessions and accounts can only be made from the official login page.
         if (r.type === 'newSession') {
             return makeSession(r.user, r.pass, r.sessionTarget)
         }

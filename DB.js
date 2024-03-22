@@ -63,7 +63,7 @@ export var database = { // I prefer not to use libraries where I can, so the dat
                 (async () => {
                     let apps = await connection.request({"type":"listApps"});
     
-                    for (a of apps) {
+                    for (let a of apps) {
                         sb.insertAdjacentHTML("beforeend", "<button id='sidebarButton' onclick='switchApp(a)'>a</button>")
                 }
                 })();
@@ -206,7 +206,7 @@ export function getItemFromPath(obj, path, user, processes = [], intent = 'read'
     let current = obj;
     console.log(JSON.stringify(obj))
 
-    for (p in pathList) {
+    for (let p in pathList) {
         let catName = pathList[p];
 
         let newCurr = current.childCategories[catName];
@@ -224,7 +224,7 @@ export function getItemFromPath(obj, path, user, processes = [], intent = 'read'
             try {
                 let itemClone = JSON.parse(JSON.stringify({ item: item })).item; // If there was a less idiotic way to clone things in JS, I would do it
 
-                for (o of processes) {
+                for (let o of processes) {
                     if (o.type === 'slice') {
                         itemClone = itemClone.slice(o.start, o.end)
                     }
@@ -262,7 +262,7 @@ export function setItemFromPath(obj, path, mode, value, user, permissions) { // 
         let pathList = path.split("/");
         let current = obj;
 
-        for (p in pathList) {
+        for (let p in pathList) {
             let catName = pathList[p];
 
             if (!current.childCategories[catName]) {
@@ -295,7 +295,7 @@ export function listChildren(obj, path, user) { // This takes a database directo
     let userInfo = getUserInfo(user);
     let current = obj;
 
-    for (p in pathList) {
+    for (let p in pathList) {
         let catName = pathList[p];
 
         let newCurr = current.childCategories[catName];
@@ -323,7 +323,7 @@ export function batchOperation(ops, obj, user) { // Performs multiple operations
     if (ops.length < 21) {
         let responses = [];
 
-        for (o of ops) {
+        for (let o of ops) {
             if (o.type === 'get') {
                 responses += getItemFromPath(obj, o.path, user, o.processes, o.valOnly)
             } else if (o.type === 'mod') {

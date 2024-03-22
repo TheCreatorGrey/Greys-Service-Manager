@@ -20,13 +20,10 @@
         let conn = new ServiceConnection("amogus");
         
 
-        setInterval(async () => {
+        async function shit() {
             await conn.setItem('base/seconds', 0);
-            let s = await conn.getItem('base/seconds');
-            s += 1;
-            await conn.setItem('base/seconds', s);
-            console.log(s)
-        }, 1000)
+        }
+        shit()
     </script>
 </body>
 

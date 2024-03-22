@@ -52,6 +52,8 @@ function processRequest(raw, r_origin) {
         }
 
         if (r.type === 'register') {
+            r,username = r.username.toLowerCase();
+
             if (database.users[r.username]) {
                 return 'USERTAKEN'
             } else {
@@ -172,7 +174,7 @@ app.get('/:appID/asset/script/:scriptID', (req, res) => {
 });
 
 app.use((req, res, next) => {
-    res.header('Access-Control-Allow-Origin', 'services.thecreatorgrey.site');
+    res.header('Access-Control-Allow-Origin', '*');
     res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
     next();
 });

@@ -9,6 +9,8 @@
     <title>GSM Login</title>
     <meta name="description" content="Example">
 
+    <link rel="icon" href="../icon.png">
+
     <link rel="stylesheet" href="../style.css">
 </head>
 
@@ -36,6 +38,7 @@
         const params = new URLSearchParams(window.location.search);
         let redirect = params.get('url');
         let redir = params.get('r');
+        let appID = params.get('id');
         let service = new ServiceConnection(null, true);
 
         // These prevent newlines in the login menu. I just duplicated them because I'm lazy
@@ -107,18 +110,18 @@
                     let sess = await service.requestSession(
                         username,
                         passInput.value,
-                        redir
+                        appID
                     );
 
                     if (sess) {
-                        if (redir) {
+                        if (redir && appID) {
                             errorMsg.style.color = 'green';
                             errorMsg.innerText = 'Login successful. You should be redirected shortly...';
 
-                            window.location.href = `../${redir}?sessID=${sess}&user=${username}`;
+                            window.location.href = `${redir}?sessID=${sess}&user=${username}`;
                         } else {
                             errorMsg.style.color = 'yellow';
-                            errorMsg.innerText = 'Could not redirect because no ID was found.';
+                            errorMsg.innerText = 'Could not redirect because no ID or redirect URL was found.';
                         }
                     } else {
                         errorMsg.style.color = 'red';

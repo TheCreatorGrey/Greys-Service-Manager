@@ -26,7 +26,7 @@ class ServiceConnection {
                         Please continue with an account.
                     </span>
 
-                    <br><button id="GSMPromptButton" onclick="window.location.href = 'https://services.thecreatorgrey.site/login/?r=${window.location.href}'">Continue</button>
+                    <br><button id="GSMPromptButton" onclick="window.location.href = 'https://services.thecreatorgrey.site/login/?r=${window.location.href}&id=${this.appID}'">Continue</button>
                 </div>
                 `)
             }

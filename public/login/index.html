@@ -30,12 +30,12 @@
         <span></span>
     </div>
 
-    <script src="../frontend/GreysServiceManager.js"></script>
+    <script src="../GreysServiceManager.js"></script>
 
     <script>
         const params = new URLSearchParams(window.location.search);
         let redirect = params.get('url');
-        let appID = params.get('id');
+        let redir = params.get('r');
         let service = new ServiceConnection(null, true);
 
         // These prevent newlines in the login menu. I just duplicated them because I'm lazy
@@ -107,15 +107,15 @@
                     let sess = await service.requestSession(
                         username,
                         passInput.value,
-                        appID
+                        redir
                     );
 
                     if (sess) {
-                        if (appID) {
+                        if (redir) {
                             errorMsg.style.color = 'green';
                             errorMsg.innerText = 'Login successful. You should be redirected shortly...';
 
-                            window.location.href = `../${appID}?sessID=${sess}&user=${username}`;
+                            window.location.href = `../${redir}?sessID=${sess}&user=${username}`;
                         } else {
                             errorMsg.style.color = 'yellow';
                             errorMsg.innerText = 'Could not redirect because no ID was found.';
@@ -135,7 +135,7 @@
                 loginBtn.onclick = async function () {
                     errorMsg.innerText = '';
 
-                    let register = await service.register(usInput.value, passInput.value);
+                    let register = await service.request({type: 'register', username: usInput.value, key: passInput.value})
 
                     if (register) {
                         if (register === true) {

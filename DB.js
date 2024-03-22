@@ -64,7 +64,7 @@ export var database = { // I prefer not to use libraries where I can, so the dat
                     let apps = await connection.request({"type":"listApps"});
     
                     for (a of apps) {
-                        sb.insertAdjacentHTML("beforeend", "<button id='sidebarButton' onclick='" + "switchApp(" + a + ")'>" + a + "</button>")
+                        sb.insertAdjacentHTML("beforeend", "<button id='sidebarButton' onclick='switchApp(a)'>a</button>")
                 }
                 })();
     
@@ -119,7 +119,7 @@ export var database = { // I prefer not to use libraries where I can, so the dat
 
                 .codeArea {
                     resize: none;
-                    width: 500px;
+                    width: 1000px;
                     height: 600px;
                     overflow-y: scroll;
                     background-color: rgb(25, 27, 25);

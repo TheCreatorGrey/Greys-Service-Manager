@@ -130,7 +130,7 @@ app.get('/:appID/:pageID?', (req, res) => {
         <!-- HTML injected by Grey's Service Manager -->
 
         <link rel="stylesheet" type="text/css" href="https://services.thecreatorgrey.site/${appID}/asset/stylesheet">
-        <script src="https://services.thecreatorgrey.site/frontend/GreysServiceManager.js"></script>
+        <script src="https://services.thecreatorgrey.site/GreysServiceManager.js"></script>
 
         <!-- ======================================= -->
 
@@ -171,11 +171,11 @@ app.get('/:appID/asset/script/:scriptID', (req, res) => {
     res.status(200).send(content);
 });
 
-//app.use((req, res, next) => {
-//    res.header('Access-Control-Allow-Origin', 'services.thecreatorgrey.site');
-//    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
-//    next();
-//});
+app.use((req, res, next) => {
+    res.header('Access-Control-Allow-Origin', 'services.thecreatorgrey.site');
+    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+    next();
+});
 
 app.post('/api', (req, res) => { // This eyesore chunk of code manages the requests.
     let body = '';

@@ -21,7 +21,9 @@
 
 
         async function shit() {
-            await conn.setItem('base/seconds', 0);
+            await conn.setItem('base', "balls", "set", {'read': ['*'],'modify': ['*'],'write': ['*']});
+
+            console.log(await conn.getItem('base'))
         }
         shit()
     </script>

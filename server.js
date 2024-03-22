@@ -52,7 +52,7 @@ function processRequest(raw, r_origin) {
         }
 
         if (r.type === 'register') {
-            r, username = r.username.toLowerCase();
+            r.username = r.username.toLowerCase();
 
             if (database.users[r.username]) {
                 return 'USERTAKEN'

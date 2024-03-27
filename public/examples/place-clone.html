@@ -21,7 +21,8 @@
 
 
         async function shit() {
-            await conn.setItem('base', "balls", "set", {'read': ['*'],'modify': ['*'],'write': ['*']});
+            shid = await conn.setItem('base/ten/four', "balls", "set", {'read': ['*'],'modify': ['*'],'write': ['*']});
+            console.log(shid)
 
             console.log(await conn.getItem('base'))
         }

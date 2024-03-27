@@ -1,6 +1,11 @@
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify, send_from_directory
 
-app = Flask(__name__, static_folder='public')
+app = Flask(__name__)
+
+@app.route('/<path:filename>')
+def serve_file(filename):
+    # Serve files from the "public" directory based on the URL path
+    return send_from_directory('public', filename)
 
 @app.route('/api', methods=['POST'])
 def api():

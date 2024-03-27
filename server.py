@@ -1,22 +1,12 @@
-import socket
+from flask import Flask, render_template, request, jsonify
 
-# Create a socket object
-server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+app = Flask(__name__, static_folder='public')
 
+@app.route('/api', methods=['POST'])
+def api():
+    data = request.json
+    print('Received data:', data)
+    return jsonify({'message': 'Data received successfully'})
 
-server_socket.bind(("", 80))
-server_socket.listen()
-
-print("Server running")
-
-while True:
-    client_socket, client_address = server_socket.accept()
-    print("Connection from {}:{}".format(*client_address))
-
-    data = client_socket.recv(1024)
-    print("Request:", data.decode())
-
-    response = "Hello"
-    client_socket.sendall(response.encode())
-
-    client_socket.close()
+if __name__ == '__main__':
+    app.run(debug=True)

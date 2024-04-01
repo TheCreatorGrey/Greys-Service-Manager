@@ -32,9 +32,9 @@ def processRequest(raw):
     appID = arg("appID")
 
     if intent == "read":
-        return itemProcess(user, appID, data["path"], "read")
+        return itemProcess(user, appID, arg("path"), "read")
     if intent == "write":
-        return itemProcess(user, appID, data["path"], "write", data["value"])
+        return itemProcess(user, appID, arg("path"), "write", value=arg("value"), permissions=arg("perms"))
 
     servLog(data)
 

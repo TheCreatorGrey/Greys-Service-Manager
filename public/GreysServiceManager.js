@@ -40,50 +40,40 @@ class ServiceConnection {
     */
     interperetErrCode(code) {
         let errCodes = {
-            'BADAUTH': {
+            'BAD_AUTH': {
                 type: 'error',
-                meaning: 'Authentication failed.'
+                meaning: 'Authentication failed'
             },
 
-            'NOITEM': {
+            'INVALID_PATH': {
                 type: 'error',
-                meaning: 'Item or path could not be found.'
-            },
-
-            'NOACCESS': {
-                type: 'error',
-                meaning: 'You do not have access to the item you requested.'
-            },
-
-            'INVALIDMODE': {
-                type: 'error',
-                meaning: 'The modification mode you supplied is invalid.'
-            },
-
-            'FAILEDPRS': {
-                type: 'error',
-                meaning: 'The processes you supplied failed. Please make sure you supplied valid process IDs and the value of the item you requested is compatible with your operation.'
-            },
-
-            'NOSESSION': {
-                type: 'error',
-                meaning: 'Your session ID is missing.'
-            },
-
-            'BAD_PATH': {
-                type: 'error',
-                meaning: 'This operation can not be performed here.'
+                meaning: 'Item or path could not be found'
             },
 
             'NO_APP': {
                 type: 'error',
-                meaning: 'Your app ID is not registered or does not exist.'
+                meaning: 'App ID is not registered or does not exist'
             },
 
-            'BAD_ORIGIN': {
+            'NO_PERMISSION': {
                 type: 'error',
-                meaning: 'This API can only be used by apps under services.thecreatorgrey.site'
-            }
+                meaning: 'Insufficient permission to read or modify item'
+            },
+
+            'INSUFFICIENT_ARGUMENTS': {
+                type: 'error',
+                meaning: 'Missing or invalid arguments'
+            },
+
+            'BAD_AUTH': {
+                type: 'error',
+                meaning: 'Authentication failed'
+            },
+
+            'USERNAME_TAKEN': {
+                type: 'error',
+                meaning: 'Username taken'
+            },
         }
 
         let EC = errCodes[code];
@@ -98,10 +88,10 @@ class ServiceConnection {
     * 
     * Requests and returns a session ID which can be used later. Can only be performed from the official Grey's Service Manager website.
     */
-    async requestSession(username, password, app) {
-        let newSess = await this.request({ type: 'newSession', user: username, pass: password, sessionTarget: app });
+    async requestSession(username, password) {
+        let newSess = await this.request({ type: 'requestSession', user: username, key: password });
 
-        if (newSess === 'BADAUTH') {
+        if (newSess === 'BAD_AUTH') {
             console.error('Session creation failed. Please make sure login is correct.');
             return false;
         } else {

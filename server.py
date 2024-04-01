@@ -1,20 +1,30 @@
 from flask import Flask, request, send_from_directory, json
 from flask_cors import CORS
 from waitress import serve
+from flask_limiter import Limiter, util
 from db import DataBase, itemProcess
+from security import makeSession, createAccount, sessionAuth
 import sys
 
 server = Flask(__name__)
+limiter = Limiter(server, key_func=util.get_remote_address)
 CORS(server)
 
 def servLog(item):
     sys.stdout.write(str(item))
 
+
 @server.route('/<path:filename>')
+@limiter.limit('30 per minute')
 def serve_file(filename):
     servLog(filename)
-    # Serve files from the "public" directory based on the URL path
-    return send_from_directory('public', filename)
+    try:
+        return send_from_directory('public', filename)
+    except FileNotFoundError:
+        try:
+            return send_from_directory('public', filename + '.html')
+        except FileNotFoundError:
+            return "File not found", 404
 
 def processRequest(raw):
     data = json.loads(raw)
@@ -28,8 +38,18 @@ def processRequest(raw):
             return None
     
     intent = arg("type")
+
+    if intent == "createUser":
+        return createAccount(arg("username_new"), arg("key"))
+    if intent == "requestSession":
+        return makeSession(arg("username"), arg("key"))
+
     user = arg("user")
     appID = arg("appID")
+    sessID = arg("sessID")
+
+    if not (sessionAuth(user, sessID)): # Everything below this line can only be performed if a valid session ID is supplied
+        return "BAD_AUTH"
 
     if intent == "read":
         return itemProcess(user, appID, arg("path"), "read", mode=arg("mode"), mArgs=arg("mArgs"))
@@ -40,7 +60,9 @@ def processRequest(raw):
 
     servLog(data)
 
+
 @server.route('/api', methods=['POST'])
+@limiter.limit('60 per minute')
 def api():
     return {"response":processRequest(request.data)}
 

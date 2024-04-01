@@ -23,10 +23,8 @@
 
     <script>
         //window.open('https://services.thecreatorgrey.site/login/embed.html', 'popup', 'popup=true')
-        let conn = new ServiceConnection("main", true);
+        let conn = new ServiceConnection("main");
         let chatscrl = 0;
-
-        let usn = `guest_${Math.round(Math.random()*9999)}`
 
         async function send(text) {
             await conn.modifyItem('chat', text, 'append', {'read': ['*'],'append': ['*'],'write': ['*']});
@@ -37,12 +35,10 @@
             if (test === "INVALID_ITEM_ID") {
                 await conn.modifyItem('chat', [], 'write', {'read': ['*'],'append': ['*'],'write': ['*']});
             }
-
-            send("[system]: A new guest has joined.")
         }
         init()
 
-        document.getElementById("send").onclick = function() {send(usn + ": " + document.getElementById("text").value); document.getElementById("text").value = ""}
+        document.getElementById("send").onclick = function() {send(conn.user + ": " + document.getElementById("text").value); document.getElementById("text").value = ""}
 
         async function upd() {
             newMsgs = await conn.getItem('chat', "chunk", {"start":chatscrl, "end":null});

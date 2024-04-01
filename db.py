@@ -1,4 +1,5 @@
 from err import error
+from timeManager import getUTC
 
 DataBase = {
     "apps":{
@@ -11,7 +12,9 @@ DataBase = {
         "thecreatorgrey":{
             "roles":["Admin"]
         }
-    }
+    },
+
+    "sessions":{}
 }
 
 def checkPermission(username, intent, item):
@@ -52,7 +55,7 @@ def itemProcess(username, app, path="", intent="write", **kwargs):
                     "subcats":{}
                 }
             else:
-                return error("INVALID_PATH")
+                return "INVALID_PATH"
             
         current = current["subcats"][p]
     
@@ -60,8 +63,8 @@ def itemProcess(username, app, path="", intent="write", **kwargs):
     items = current["items"]
     if itemID in items:
         if not checkPermission(username, intent, items[itemID]):
-            return error("NO_PERMISSION")
-    
+            return "NO_PERMISSION"
+        
 
     # Read or write depending on intent
     if intent == "write": 
@@ -69,9 +72,9 @@ def itemProcess(username, app, path="", intent="write", **kwargs):
             items[itemID]["value"] = kwargs["value"]
         else:
             if not ("permissions" in kwargs):
-                return error("INSUFFICIENT_ARGUMENTS")
+                return "INSUFFICIENT_ARGUMENTS"
             if not ("value" in kwargs):
-                return error("INSUFFICIENT_ARGUMENTS")
+                return "INSUFFICIENT_ARGUMENTS"
             
             items[itemID] = {
                 "value":kwargs["value"], 
@@ -100,14 +103,19 @@ def itemProcess(username, app, path="", intent="write", **kwargs):
 
             return item
         else:
-            return error("INVALID_ITEM_ID")
+            return "INVALID_PATH"
         
     elif intent == "append":
         if not ("value" in kwargs):
-            return error("INSUFFICIENT_ARGUMENTS")
+            return "INSUFFICIENT_ARGUMENTS"
 
         if itemID in items:
             if type(items[itemID]["value"]) is list:
                 items[itemID]["value"].append(kwargs["value"])
         else:
-            return error("INVALID_ITEM_ID")
+            return "INVALID_PATH"
+        
+
+
+    if not (intent == "read"):
+        items[itemID]["lastModified"] = getUTC()

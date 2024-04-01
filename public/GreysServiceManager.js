@@ -153,9 +153,9 @@ class ServiceConnection {
     /**
     * Modifies or sets an item from the database.
     */
-    async setItem(path, value, permissions = {}) {
+    async modifyItem(path, value, intent="write", permissions = {}) {
         let res = await this.request({
-            type: 'write',
+            type: intent,
             path: path,
             value: value,
             perms: permissions,

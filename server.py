@@ -35,6 +35,8 @@ def processRequest(raw):
         return itemProcess(user, appID, arg("path"), "read")
     if intent == "write":
         return itemProcess(user, appID, arg("path"), "write", value=arg("value"), permissions=arg("perms"))
+    if intent == "append":
+        return itemProcess(user, appID, arg("path"), "append", value=arg("value"))
 
     servLog(data)
 

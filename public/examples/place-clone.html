@@ -19,13 +19,13 @@
         //window.open('https://services.thecreatorgrey.site/login/embed.html', 'popup', 'popup=true')
         let conn = new ServiceConnection("main");
 
+        async function test() {
+            await conn.modifyItem('chat', [], 'write', {'read': ['*'],'append': ['*'],'write': ['*']});
+            await conn.modifyItem('chat', "test", 'append', {'read': ['*'],'append': ['*'],'write': ['*']});
 
-        async function shit() {
-            shid = await conn.setItem('base/ten/four', "balls", {'read': ['*'],'modify': ['*'],'write': ['*']});
-
-            console.log(await conn.getItem('base/ten/four'))
+            console.log(await conn.getItem('chat'))
         }
-        shit()
+        test()
     </script>
 </body>
 

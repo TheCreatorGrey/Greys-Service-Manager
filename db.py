@@ -83,11 +83,20 @@ def itemProcess(username, app, path="", intent="write", **kwargs):
     
     elif intent == "read":
         if itemID in items:
-            item = items[itemID]["value"]
-            if "postProcesses" in kwargs:
-                for pr in kwargs["postProcesses"]:
-                    if pr["process"] == "slice":
-                        return item[pr["start"]:pr["finish"]]
+            item = items[itemID]
+
+            if "mode" in kwargs:
+                mode = kwargs["mode"]
+                mArgs = kwargs["mArgs"]
+
+                if mode == "plain":
+                    return item["value"]
+                if mode == "whole":
+                    return item
+                if mode == "length":
+                    return len(item["value"])
+                if mode == "chunk":
+                    return item["value"][mArgs["start"]:mArgs["end"]]
 
             return item
         else:

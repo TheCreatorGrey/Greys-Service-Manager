@@ -19,13 +19,24 @@
         //window.open('https://services.thecreatorgrey.site/login/embed.html', 'popup', 'popup=true')
         let conn = new ServiceConnection("main");
 
+        async function sendMessage(text) {
+            await conn.modifyItem('chat', text, 'append', {'read': ['*'],'append': ['*'],'write': ['*']});
+        }
+
         async function test() {
             await conn.modifyItem('chat', [], 'write', {'read': ['*'],'append': ['*'],'write': ['*']});
-            await conn.modifyItem('chat', "test", 'append', {'read': ['*'],'append': ['*'],'write': ['*']});
-
-            console.log(await conn.getItem('chat'))
         }
         test()
+
+        async function upd() {
+            console.log(await conn.getItem('chat', "chunk", {"start":1, "end":-1}))
+        }
+
+        sendMessage("test 1")
+        sendMessage("test 2")
+        sendMessage("test 3")
+
+        setInterval(upd, 3000)
     </script>
 </body>
 

@@ -6,16 +6,19 @@ import sys
 app = Flask(__name__)
 CORS(app)
 
+def servLog(item):
+    sys.stdout.write(str(item))
+
 @app.route('/<path:filename>')
 def serve_file(filename):
-    sys.stdout.write(filename)
+    servLog(filename)
     # Serve files from the "public" directory based on the URL path
     return send_from_directory('public', filename)
 
 @app.route('/api', methods=['POST'])
 def api():
     data = json.loads(request. data)
-    sys.stdout.write(data)
+    servLog(data)
     return data
 
 if __name__ == '__main__':

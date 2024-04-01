@@ -122,27 +122,20 @@ class ServiceConnection {
         if (!(data.type === 'newSession')) {
             data.user = this.user;
         }
-
-        var f = fetch(this.apiUrl, {
+        
+        var response = fetch(this.apiUrl, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify(data),
         })
-            .then(response => response.json())
-            .then(data => {
-                return data;
-            })
-            .catch(error => {
-                console.error('Error:', error);
-            });
 
-        return f.then((r) => {
-            this.interperetErrCode(r.res);
-
-            return r.res;
-        });
+        console.log(response)
+        response = await response.json()
+        console.log(response)
+        this.interperetErrCode(response.res);
+        return response.res;
     }
 
     /**

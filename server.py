@@ -26,7 +26,7 @@ def serve_file(filename):
         return send_from_directory('public', filename)
     except FileNotFoundError:
         try:
-            return send_from_directory('public', filename + '.html')
+            return send_from_directory('public', filename + '/index.html')
         except FileNotFoundError:
             return "File not found", 404
 

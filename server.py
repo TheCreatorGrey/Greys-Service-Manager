@@ -32,7 +32,7 @@ def processRequest(raw):
     appID = arg("appID")
 
     if intent == "read":
-        return itemProcess(user, appID, arg("path"), "read")
+        return itemProcess(user, appID, arg("path"), "read", postProcesses=arg("pprs"))
     if intent == "write":
         return itemProcess(user, appID, arg("path"), "write", value=arg("value"), permissions=arg("perms"))
     if intent == "append":

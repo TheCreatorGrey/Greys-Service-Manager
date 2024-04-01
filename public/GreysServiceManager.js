@@ -141,10 +141,11 @@ class ServiceConnection {
     /**
     * Gets an item from the database.
     */
-    async getItem(path) {
+    async getItem(path, postProcesses=[]) {
         let res = await this.request({
             type: 'read',
-            path: path
+            path: path,
+            pprs:postProcesses
         });
 
         return res

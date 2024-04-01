@@ -83,7 +83,13 @@ def itemProcess(username, app, path="", intent="write", **kwargs):
     
     elif intent == "read":
         if itemID in items:
-            return items[itemID]["value"]
+            item = items[itemID]["value"]
+            if "postProcesses" in kwargs:
+                for pr in kwargs["postProcesses"]:
+                    if pr["process"] == "slice":
+                        return item[pr["start"]:pr["finish"]]
+
+            return item
         else:
             return error("INVALID_ITEM_ID")
         

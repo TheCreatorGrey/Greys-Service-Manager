@@ -1,13 +1,17 @@
 from flask import Flask, request, send_from_directory, json
 from flask_cors import CORS
 from waitress import serve
-from flask_limiter import Limiter, util
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
 from db import DataBase, itemProcess
 from security import makeSession, createAccount, sessionAuth
 import sys
 
 server = Flask(__name__)
-limiter = Limiter(server, key_func=util.get_remote_address)
+limiter = Limiter(
+    get_remote_address,
+    app=server
+)
 CORS(server)
 
 def servLog(item):

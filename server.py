@@ -20,9 +20,9 @@ def servLog(item):
     sys.stdout.write(str(item))
 
 
-@server.route('/login')
-def serve_file(filename):
-    return send_from_directory('public/login', 'index.html')
+#@server.route('/login')
+#def serve_file(filename):
+#    return send_from_directory('public/login', 'index.html')
 
 @server.route('/<path:filename>')
 def serve_file(filename):

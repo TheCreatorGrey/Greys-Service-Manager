@@ -10,7 +10,9 @@ import sys
 server = Flask(__name__)
 limiter = Limiter(
     get_remote_address,
-    app=server
+    app=server,
+    default_limits=["30 per minute"],
+    storage_uri="memory://",
 )
 CORS(server)
 
@@ -18,17 +20,13 @@ def servLog(item):
     sys.stdout.write(str(item))
 
 
-@server.route('/<path:filename>')
-@limiter.limit('30 per minute')
+@server.route('/login')
 def serve_file(filename):
-    servLog(filename)
-    try:
-        return send_from_directory('public', filename)
-    except FileNotFoundError:
-        try:
-            return send_from_directory('public', filename + '/index.html')
-        except FileNotFoundError:
-            return "File not found", 404
+    return send_from_directory('public/login', 'index.html')
+
+@server.route('/<path:filename>')
+def serve_file(filename):
+    return send_from_directory('public', filename)
 
 def processRequest(raw):
     data = json.loads(raw)
@@ -66,7 +64,7 @@ def processRequest(raw):
 
 
 @server.route('/api', methods=['POST'])
-@limiter.limit('60 per minute')
+@limiter.limit('60 per minute', override_defaults=True)
 def api():
     return {"response":processRequest(request.data)}
 

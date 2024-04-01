@@ -138,7 +138,7 @@
                 loginBtn.onclick = async function () {
                     errorMsg.innerText = '';
 
-                    let register = await service.request({ type: 'createUser', username: usInput.value, key: passInput.value })
+                    let register = await service.request({ type: 'createUser', username_new: usInput.value, key: passInput.value })
 
                     if (register) {
                         if (register === true) {

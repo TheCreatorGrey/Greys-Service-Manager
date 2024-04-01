@@ -112,7 +112,6 @@ class ServiceConnection {
         if (!(data.type === 'newSession')) {
             data.user = this.user;
         }
-        data.user = "thecreatorgrey"
         
         var response = await fetch(this.apiUrl, {
             method: 'POST',

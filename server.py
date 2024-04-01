@@ -5,7 +5,7 @@ from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 from db import DataBase, itemProcess
 from security import makeSession, createAccount, sessionAuth
-import sys
+import sys, os
 
 server = Flask(__name__)
 limiter = Limiter(
@@ -24,9 +24,15 @@ def servLog(item):
 #def serve_file(filename):
 #    return send_from_directory('public/login', 'index.html')
 
+@server.route('/')
 @server.route('/<path:filename>')
-def serve_file(filename):
-    return send_from_directory('public', filename)
+def index(filename=''):
+    if not filename \
+        or filename.endswith('/') \
+        or os.path.isdir(os.path.join("public", filename)):
+        
+        filename = os.path.join(filename, 'index.html')
+    return send_from_directory("public", filename)
 
 def processRequest(raw):
     data = json.loads(raw)

@@ -9,8 +9,14 @@ DataBase = {
     },
 
     "users":{
-        "thecreatorgrey":{
-            "roles":["Admin"]
+        "guest":{
+            "key":"4b949c130904506119a31ad2ca94bc9a97f56be914676fe08a5de594ea4c96bd", # this is a temporary throwaway account; I'm not oblivious
+            "nick":"guest",
+            "description":"This user has not created a description yet.",
+            "roles":["Member"],
+            "appdata":{},
+            "joinDT":getUTC(),
+            "lastOnline":getUTC()
         }
     },
 

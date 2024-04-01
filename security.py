@@ -25,7 +25,10 @@ def keyAuth(user, key):
 def sessionAuth(user, sessID):
     if not (user in DataBase["users"]):
         return "NO_USER"
-    return DataBase["sessions"][user] == sessID
+    if user in DataBase["sessions"]:
+        return DataBase["sessions"][user] == sessID
+    else:
+        return False
 
 def makeSession(user, key):
     if not (user in DataBase["users"]):

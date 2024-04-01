@@ -1,0 +1,62 @@
+<!doctype html>
+
+<html lang="en" class="homepage">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=0">
+
+    <title>GWSM Chat</title>
+    <meta name="description" content="Example">
+
+    <link rel="stylesheet" href="chat.css">
+    <link rel="icon" href="../icon.png">
+</head>
+
+<body>
+    <script src="../GreysServiceManager.js"></script>
+
+    <div id="board"></div>
+
+    <textarea id="text"></textarea>
+    <button id="send">Send</button>
+
+    <script>
+        //window.open('https://services.thecreatorgrey.site/login/embed.html', 'popup', 'popup=true')
+        let conn = new ServiceConnection("main", true);
+        let chatscrl = 0;
+
+        let usn = `guest_${Math.round(Math.random()*9999)}`
+
+        async function send(text) {
+            await conn.modifyItem('chat', text, 'append', {'read': ['*'],'append': ['*'],'write': ['*']});
+        }
+
+        async function init() {
+            test = await conn.getItem('chat', 'length')
+            if (test === "INVALID_ITEM_ID") {
+                await conn.modifyItem('chat', [], 'write', {'read': ['*'],'append': ['*'],'write': ['*']});
+            }
+
+            send("[system]: A new guest has joined.")
+        }
+        init()
+
+        document.getElementById("send").onclick = function() {send(usn + ": " + document.getElementById("text").value); document.getElementById("text").value = ""}
+
+        async function upd() {
+            newMsgs = await conn.getItem('chat', "chunk", {"start":chatscrl, "end":null});
+            chatscrl += newMsgs.length
+
+            for (m of newMsgs) {
+                document.getElementById("board").insertAdjacentHTML("beforeend", `
+                ${m}<br>
+                `)
+            }
+        }
+
+        setInterval(upd, 3000)
+    </script>
+</body>
+
+</html>

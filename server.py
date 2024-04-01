@@ -15,7 +15,7 @@ def serve_file(filename):
 @app.route('/api', methods=['POST'])
 def api():
     data = json.loads(request. data)
-    sys.stdout.write(data, flush=True)
+    sys.stdout.write(data)
     return data
 
 if __name__ == '__main__':

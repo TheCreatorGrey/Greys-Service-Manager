@@ -123,7 +123,7 @@ class ServiceConnection {
             data.user = this.user;
         }
         
-        var response = fetch(this.apiUrl, {
+        var response = await fetch(this.apiUrl, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -131,22 +131,19 @@ class ServiceConnection {
             body: JSON.stringify(data),
         })
 
-        console.log(response)
         response = await response.json()
         console.log(response)
-        this.interperetErrCode(response.res);
-        return response.res;
+        this.interperetErrCode(response.response);
+        return response.response;
     }
 
     /**
     * Gets an item from the database.
     */
-    async getItem(path, processes = [], valOnly = true) {
+    async getItem(path) {
         let res = await this.request({
-            type: 'get',
-            prs: processes,
-            path: path,
-            valOnly: valOnly
+            type: 'read',
+            path: path
         });
 
         return res
@@ -155,10 +152,9 @@ class ServiceConnection {
     /**
     * Modifies or sets an item from the database.
     */
-    async setItem(path, value, mode = 'set', permissions = {}) {
+    async setItem(path, value, permissions = {}) {
         let res = await this.request({
-            type: 'set',
-            mode: mode,
+            type: 'write',
             path: path,
             value: value,
             perms: permissions,

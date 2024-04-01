@@ -86,3 +86,13 @@ def itemProcess(username, app, path="", intent="write", **kwargs):
             return items[itemID]["value"]
         else:
             return error("INVALID_ITEM_ID")
+        
+    elif intent == "append":
+        if not ("value" in kwargs):
+            return error("INSUFFICIENT_ARGUMENTS")
+
+        if itemID in items:
+            if type(items[itemID]["value"]) is list:
+                items[itemID]["value"].append(kwargs["value"])
+        else:
+            return error("INVALID_ITEM_ID")

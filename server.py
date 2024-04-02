@@ -5,7 +5,7 @@ from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 from db import DataBase, itemProcess
 from security import makeSession, createAccount, sessionAuth
-import sys, os
+import os, logging
 
 server = Flask(__name__)
 limiter = Limiter(
@@ -17,7 +17,7 @@ limiter = Limiter(
 CORS(server)
 
 def servLog(item):
-    sys.stdout.write(str(item))
+    logging.info(str(item))
 
 
 #@server.route('/login')

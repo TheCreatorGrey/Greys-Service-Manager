@@ -11,7 +11,7 @@
 
     <link rel="icon" href="../icon.png">
 
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="../style.css">
 </head>
 
 <body
@@ -113,11 +113,12 @@
                         appID
                     );
 
-                    if (sess) {
+                    err = service.interperetErrCode(sess)
+
+                    if (sess || (!err)) {
                         if (redir && appID) {
                             errorMsg.style.color = 'green';
                             errorMsg.innerText = 'Login successful. You should be redirected shortly...';
-
                             window.location.href = `${redir}?sessID=${sess}&user=${username}`;
                         } else {
                             errorMsg.style.color = 'yellow';

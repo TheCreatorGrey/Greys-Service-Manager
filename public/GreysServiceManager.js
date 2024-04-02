@@ -74,6 +74,11 @@ class ServiceConnection {
                 type: 'error',
                 meaning: 'Username taken'
             },
+
+            'NO_USER': {
+                type: 'error',
+                meaning: 'User not found'
+            },
         }
 
         let EC = errCodes[code];
@@ -89,7 +94,7 @@ class ServiceConnection {
     * Requests and returns a session ID which can be used later. Can only be performed from the official Grey's Service Manager website.
     */
     async requestSession(username, password) {
-        let newSess = await this.request({ type: 'requestSession', user: username, key: password });
+        let newSess = await this.request({ type: 'requestSession', username: username, key: password });
 
         if (newSess === 'BAD_AUTH') {
             console.error('Session creation failed. Please make sure login is correct.');

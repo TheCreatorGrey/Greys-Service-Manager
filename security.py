@@ -1,7 +1,7 @@
 from db import DataBase
 from timeManager import getUTC
 from random import randint
-import hashlib
+import hashlib, logging
 
 def makeHash(string):
     h = hashlib.new('sha256')
@@ -26,7 +26,7 @@ def sessionAuth(user, sessID):
     if not (user in DataBase["users"]):
         return "NO_USER"
     if user in DataBase["sessions"]:
-        return DataBase["sessions"][user] == sessID
+        return (DataBase["sessions"][user] == sessID)
     else:
         return False
 
@@ -50,6 +50,8 @@ def createAccount(username, key):
             final += i
         else:
             return "BAD_CHARS"
+        
+    logging.info(final)
     
     DataBase["users"][final] = {
         "key":makeHash(key),
@@ -60,3 +62,5 @@ def createAccount(username, key):
         "joinDT":getUTC(),
         "lastOnline":getUTC()
     }
+
+    return True

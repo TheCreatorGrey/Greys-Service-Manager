@@ -50,6 +50,11 @@ class ServiceConnection {
                 meaning: 'Item or path could not be found'
             },
 
+            'INVALID_ITEM_ID': {
+                type: 'error',
+                meaning: 'Could not find item in the path specified'
+            },
+
             'NO_APP': {
                 type: 'error',
                 meaning: 'App ID is not registered or does not exist'

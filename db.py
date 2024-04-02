@@ -109,7 +109,7 @@ def itemProcess(username, app, path="", intent="write", **kwargs):
 
             return item
         else:
-            return "INVALID_PATH"
+            return "INVALID_ITEM_ID"
         
     elif intent == "append":
         if not ("value" in kwargs):
@@ -119,7 +119,7 @@ def itemProcess(username, app, path="", intent="write", **kwargs):
             if type(items[itemID]["value"]) is list:
                 items[itemID]["value"].append(kwargs["value"])
         else:
-            return "INVALID_PATH"
+            return "INVALID_ITEM_ID"
         
 
 

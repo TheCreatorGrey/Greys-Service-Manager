@@ -111,7 +111,7 @@ class ServiceConnection {
     * Makes a request to the server.
     */
     async request(data) {
-        data.sessionID = this.sessionID;
+        data.sessID = this.sessionID;
         data.appID = this.appID;
 
         if (!(data.type === 'newSession')) {

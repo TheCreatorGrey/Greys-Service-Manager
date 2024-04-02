@@ -25,23 +25,24 @@ DataBase = {
 
 def checkPermission(username, intent, item):
     result = False
-    roles = DataBase["users"][username]["roles"]
-    permCode = item["perms"]
+    if (username in DataBase["users"]):
+        roles = DataBase["users"][username]["roles"]
+        permCode = item["perms"]
 
-    if item["owner"] == username:
-        result =  True
-
-    if intent in permCode:
-        perm = permCode[intent]
-
-        if "*" in perm:
+        if item["owner"] == username:
             result =  True
-        if username in perm:
-            result = True
 
-        for r in roles:
-            if ("*" + r) in perm:
+        if intent in permCode:
+            perm = permCode[intent]
+
+            if "*" in perm:
+                result =  True
+            if username in perm:
                 result = True
+
+            for r in roles:
+                if ("*" + r) in perm:
+                    result = True
     
     return result
 

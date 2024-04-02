@@ -33,15 +33,23 @@ class ServiceConnection {
             }
         }
 
-        this.request({"type":"check"}).then(
-            () => {
-                if (this.onready) {
-                    this.onready()
-                } else {
-                    console.warn("OnReady not supplied")
+        if (this.sessionID && this.user) {
+            this.request({"type":"check"}).then(
+                result => {
+                    if (result == true) {
+                        console.info("Connection established")
+    
+                        if (this.onready) {
+                            this.onready()
+                        } else {
+                            console.warn("OnReady not supplied")
+                        }
+                    } else {
+                        console.error("Connection failed")
+                    }
                 }
-            }
-        )
+            )
+        }
     }
 
     /**

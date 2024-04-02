@@ -7,6 +7,9 @@ from db import DataBase, itemProcess
 from security import makeSession, createAccount, sessionAuth
 import os, logging
 
+with open("test.txt", "w") as f:
+    f.write("test")
+
 server = Flask(__name__)
 limiter = Limiter(
     get_remote_address,
@@ -18,11 +21,6 @@ CORS(server)
 
 def servLog(item):
     logging.info(str(item))
-
-
-#@server.route('/login')
-#def serve_file(filename):
-#    return send_from_directory('public/login', 'index.html')
 
 @server.route('/')
 @server.route('/<path:filename>')
@@ -47,6 +45,8 @@ def processRequest(raw):
     
     intent = arg("type")
 
+    if intent == "check":
+        return True
     if intent == "createUser":
         return createAccount(arg("username_new"), arg("key"))
     if intent == "requestSession":

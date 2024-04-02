@@ -7,6 +7,7 @@ class ServiceConnection {
 
         this.apiUrl = 'https://services.thecreatorgrey.site/api';
         this.appID = appID;
+        this.onready = undefined;
 
         if (guest) {
             console.info('You have initialized your ServiceConnection in guest mode. You will only be able to perform operations available to guests.')
@@ -31,6 +32,16 @@ class ServiceConnection {
                 `)
             }
         }
+
+        this.request({"type":"check"}).then(
+            () => {
+                if (this.onready) {
+                    this.onready()
+                } else {
+                    console.warn("OnReady not supplied")
+                }
+            }
+        )
     }
 
     /**

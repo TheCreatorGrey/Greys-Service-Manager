@@ -1,14 +1,25 @@
 body {
-    background-color: black;
-    color: wheat;
+    background-color: rgb(20, 20, 20);
+    color: white;
 }
 
 #board {
     position: absolute;
+    bottom: 60px;
+    left: 0;
     width: 100%;
-    height: calc(100% - 60px);
+    max-height: calc(100% - 60px);
     font-size: 25px;
     font-family: 'Times New Roman';
+}
+
+.messageContainer {
+    width: 100%;
+}
+
+.messageContainer:hover {
+    background-color: rgba(255, 255, 255, .05);
+    transition: background-color .2s;
 }
 
 #text {

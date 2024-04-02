@@ -16,42 +16,62 @@
 <body>
     <script src="../GreysServiceManager.js"></script>
 
-    <div id="board"></div>
+    <div id="board">
+    </div>
 
     <textarea id="text"></textarea>
     <button id="send">Send</button>
 
     <script>
         //window.open('https://services.thecreatorgrey.site/login/embed.html', 'popup', 'popup=true')
+
         let conn = new ServiceConnection("main");
-        let chatscrl = 0;
 
-        async function send(text) {
-            await conn.modifyItem('chat', text, 'append', {'read': ['*'],'append': ['*'],'write': ['*']});
-        }
-
-        async function init() {
-            test = await conn.getItem('chat', 'length')
-            if (test === "INVALID_ITEM_ID") {
+        conn.onready = async () => {
+            if ((await conn.getItem('chat', 'length')) === "INVALID_ITEM_ID") {
                 await conn.modifyItem('chat', [], 'write', {'read': ['*'],'append': ['*'],'write': ['*']});
             }
-        }
-        init()
 
-        document.getElementById("send").onclick = function() {send(conn.user + ": " + document.getElementById("text").value); document.getElementById("text").value = ""}
+            let chatscrl = 0;
+            const board = document.getElementById("board");
+            let username = conn.user
 
-        async function upd() {
-            newMsgs = await conn.getItem('chat', "chunk", {"start":chatscrl, "end":null});
-            chatscrl += newMsgs.length
+            async function addToBoard(text, sender, id) {
+                let vertAlign;
+                let side;
 
-            for (m of newMsgs) {
-                document.getElementById("board").insertAdjacentHTML("beforeend", `
-                ${m}<br>
+                if (username === sender) {
+                    side = "right"
+                } else {
+                    side = "left"
+                }
+
+                board.insertAdjacentHTML("beforeend", `
+                <div id="message-${id}" class="messageContainer">
+                    <span style="color:wheat">[ ${sender} ]</span> <span id="message-text-${id}"></span>
+                </div>
                 `)
-            }
-        }
 
-        setInterval(upd, 3000)
+                document.getElementById(`message-text-${id}`).innerText = text
+            }
+
+            async function send(text) {
+                await conn.modifyItem('chat', {text:text, sender:username}, 'append', {'read': ['*'],'append': ['*'],'write': ['*']});
+            }
+
+            document.getElementById("send").onclick = function() {send(document.getElementById("text").value); document.getElementById("text").value = ""}
+
+            async function upd() {
+                newMsgs = await conn.getItem('chat', "chunk", {"start":chatscrl, "end":null});
+
+                for (m of newMsgs) {
+                    chatscrl += 1
+                    addToBoard(m.text, m.sender, chatscrl)
+                }
+            }
+
+            setInterval(upd, 3000)
+        }
     </script>
 </body>
 
